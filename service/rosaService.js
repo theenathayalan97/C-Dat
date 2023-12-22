@@ -16,13 +16,7 @@ async function rosa(req, res){
           console.log(`rosa with the name "${tagName}" already exists in the configuration.`);
           return res.status(400).send(`ASG with the name "${tagName}" already exists in the configuration.`)
         } else {
-        const tfConfig = `
-              // provider "aws" {
-              //   access_key = "AKIA2TVEYKFL66QXICEW"
-              //   secret_key = "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"
-              //   region     = "ap-south-1"
-              // }
-    
+        const tfConfig = `    
               terraform {
               required_providers {
                 aws = {
@@ -88,8 +82,8 @@ async function rosa(req, res){
               locals {
               path = coalesce(var.path, "/")
               sts_roles = {
-              aws_access_key_id     = "AKIA2TVEYKFL66QXICEW"    
-              aws_secret_access_key = "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"
+              aws_access_key_id     = ""    
+              aws_secret_access_key = ""
               token                 = var.token
               url                   = var.url
               role_arn         = "arn:aws:iam::729416225111:role/account-role-blmo-Installer-Role",

@@ -15,11 +15,6 @@ provider "rhcs" {
   url   = var.url
 }
 
-# provider "aws" {
-#   access_key = "AKIA2TVEYKFL66QXICEW"
-#  secret_key = "caYzvBu7cM6Mq3NK8xJA/Y6QlLkE+lNdewspj509"
-#   region = var.cloud_region
-# }
 
 resource "aws_s3_bucket" "example_bucket" {
   bucket = "demo-rosa-datayaan"
