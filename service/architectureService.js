@@ -1,8 +1,10 @@
 const fs = require('fs');
 const { exec } = require('child_process');
-const path = require('path');
+const path = "/home/theena/project/c-dat";
+const respounce = require('../responce/responce')
+const createArchitecture = require('../architecture/architecture')
 
-async function architecture(req, res) {
+async function architecture(req, res, message ) {
     try {
         let config = []
         let vpc = req.body.vpc.vpcTittle
@@ -12,37 +14,38 @@ async function architecture(req, res) {
         let securityGroup = req.body.securityGroup.securityGroupTittle
         let ec2Instance = req.body.ec2Instance.ec2InstanceTittle
         if (vpc == 'vpc') {
-            let vpcDetail = await dataFunction.createVpc(req, res)
+            let vpcDetail = await createArchitecture.createVpc(req, res)
             config += vpcDetail
         }
 
         if (subnet == 'subnet') {
-            let subnetDetail = await dataFunction.createSubnet(req, res)
+            let subnetDetail = await createArchitecture.create
+            Subnet(req, res)
             config += subnetDetail
         }
         if (internetGateWay == 'internetGateWay') {
-            let internetGateWayDetail = await dataFunction.createInternetGateWay(req, res)
+            let internetGateWayDetail = await createArchitecture.createInternetGateWay(req, res)
             config += internetGateWayDetail
         }
         if (routeTable == 'routeTable') {
-            let routeTableDetail = await dataFunction.createRouteTable(req, res)
+            let routeTableDetail = await createArchitecture.createRouteTable(req, res)
             config += routeTableDetail
         }
         if (securityGroup == 'securityGroup') {
-            let securityGroupDetail = await dataFunction.createSecurityGroup(req, res)
+            let securityGroupDetail = await createArchitecture.createSecurityGroup(req, res)
             config += securityGroupDetail
         }
         if (ec2Instance == 'ec2Instance') {
-            let ec2InstanceDetail = await dataFunction.createEc2Instance(req, res)
+            let ec2InstanceDetail = await createArchitecture.createEc2Instance(req, res)
             config += ec2InstanceDetail
         }
 
         const currentDate = new Date();
         const formattedDate = currentDate.toISOString().replace(/[:.]/g, '-');
 
-        const fileName = `/home/dys/project/Backend-Terraform-Nodejs/aws_vpc_${formattedDate}.tf`;
+        const fileName = `${path}/aws_vpc_${formattedDate}.tf`;
         fs.appendFileSync(fileName, config);
-        const configPath = "/home/dys/project/Backend-Terraform-Nodejs";
+        const configPath = `${path}`;
         process.chdir(configPath);
 
         exec("terraform apply -auto-approve -parallelism=10", (applyError, applyStdout, applyStderr) => {
@@ -51,7 +54,7 @@ async function architecture(req, res) {
                 return res.status(400).send("Terraform Architecture created failed");
             } else {
                 console.error(" Terraform Architecture created successfully ");
-                return true ;
+                respounce.createMessage(req, res, message)
             }
         });
     } catch (error) {

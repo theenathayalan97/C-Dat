@@ -1,4 +1,4 @@
-
+const path = "/home/theena/project/c-dat";
 
 async function createVpc(req, res) {
     let vpcTagName = req.body.vpc.vpcTagName

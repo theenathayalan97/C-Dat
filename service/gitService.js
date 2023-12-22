@@ -1,16 +1,16 @@
 const fs = require('fs');
 const { exec } = require('child_process');
-const path = require('path');
-const simpleGit = require('simple-git');
+const path = "/home/theena/project/c-dat";
+const respounce = require('../responce/responce')
 
-async function codePush(req, res) {
+async function codePush(req, res, message) {
     try {
         const repositoryName = "Backend-Terraform-Nodejs";
         const branchName = "master";
         AWS.config.update({ region: 'ap-south-1' });
 
         // Change to the repository directory
-        process.chdir("D:/DAT");
+        process.chdir(`${path}`);
 
         console.log('Current working directory:', process.cwd());
         //credentials
@@ -29,14 +29,14 @@ async function codePush(req, res) {
         // Post the latest code from CodeCommit
         const pushCommand = `git push https://git-codecommit.ap-south-1.amazonaws.com/v1/repos/Backend-Terraform-Nodejs`;
         execSync(pushCommand, { stdio: 'inherit' });
+        respounce.createMessage(req, res, message)
 
-        return true;
     } catch (error) {
         return res.status(400).json({ message: "something went wrong ", result: error.message });
     }
 }
 
-async function codePull(req, res) {
+async function codePull(req, res, message) {
     try {
         const repositoryName = "Backend-Terraform-Nodejs";
         const branchName = "master";
@@ -44,16 +44,14 @@ async function codePull(req, res) {
 
         // Clone the CodeCommit repository
         const cloneCommand = `git clone codecommit::ap-south-1://Backend-Terraform-Nodejs`;
-        //execSync -> execute Git commands synchronously.
         execSync(cloneCommand, { stdio: 'inherit' });
-
-        // Change to the repository directory
         process.chdir(repositoryName);
 
         // Pull the latest code from CodeCommit
         const pullCommand = `git pull origin ${branchName}`;
         execSync(pullCommand, { stdio: 'inherit' });
-        return true;
+        respounce.createMessage(req, res, message)
+
     } catch (error) {
         return res.status(400).json({ message: "something went wrong ", result: error.message });
     }

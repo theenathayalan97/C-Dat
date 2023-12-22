@@ -1,19 +1,13 @@
 const fs = require('fs');
 const { exec } = require('child_process');
-const path = require('path');
+const path = "/home/theena/project/c-dat";
 const simpleGit = require('simple-git');
+const respounce = require('../responce/responce')
 
-async function vpcCreation(req, res) {
-    try {
-
-    } catch (error) {
-
-    }
-}
 
 // Get list of AWS services
 
-async function vpcListGet(req, res) {
+async function vpcListGet(req, res, message) {
     try {
         const tfConfig = `data "aws_vpcs" "foo" {
         }
@@ -34,7 +28,8 @@ async function vpcListGet(req, res) {
                 const vpcIdRegex = /"vpc-\w+"/g;
                 const matchArray = applyStdout.match(vpcIdRegex);
                 const vpcIds = matchArray.map(match => match.replace(/"/g, ''));
-                return vpcIds;
+                respounce.createMessage(req, res, message, vpcIds  )
+
             }
         });
     } catch (error) {
@@ -64,7 +59,8 @@ async function securityGroupListGet(req, res) {
                 const securityGroupIdRegex = /"sg-\w+"/g;
                 const matchArray = applyStdout.match(securityGroupIdRegex);
                 const securityGroupIds = matchArray.map(match => match.replace(/"/g, ''));
-                return securityGroupIds;
+                respounce.createMessage(req, res, message, securityGroupIds  )
+                // return securityGroupIds;
             }
         });
     } catch (error) {
@@ -135,5 +131,5 @@ async function osListGet(req, res) {
 
 
 
-module.exports = { vpcCreation, vpcListGet, securityGroupListGet, 
+module.exports = { vpcListGet, securityGroupListGet, 
     subnetGetList, osListGet,  };
