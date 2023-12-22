@@ -138,8 +138,8 @@ async function code_pull(req, res) {
 
 async function architecture(req, res) {
   try {
-    let architecture_message = message.
-    let codeArchitecture = await architectureService.architecture(req, res, message)
+    let architecture_message = message.architecture
+    let codeArchitecture = await architectureService.architecture(req, res, architecture_message)
   }
   catch (error) {
     console.log("error is: ", error);
@@ -153,7 +153,7 @@ async function load_balancer(req, res){
     let load_balancer = await architectureService.load_balancer(req, res, message)
 
   } catch (error) {
-    
+    return res.status(400).json({ message: "something went wrong", result: error.message})
   }
 }
 
@@ -180,6 +180,7 @@ module.exports = {
   code_pull,
   push_code,
   architecture,
-  rosa
+  rosa,
+  load_balancer
   // jenkin,
 };
