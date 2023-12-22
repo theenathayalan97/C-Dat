@@ -65,7 +65,7 @@ async function os_list(req, res) {
 async function s3_bucket(req, res) {
   try {
     let s3_bucket_message = message.s3Bucket
-    const bucket_creation = await userService.s3_bucket_creation(req, res)
+    const bucket_creation = await userService.s3_bucket_creation(req, res, s3_bucket_message)
   } catch (error) {
     return res.status(400).json({ message: " something went wrong ", result: error.message })
   }
@@ -89,7 +89,7 @@ async function serviceDestroy(req, res) {
     const destroy = await destroyService.serviceDestroy(req, res, destroy_message)
   } catch (error) {
     console.error("Error:", error);
-    return res.status(500).json({ message: "Something went wrong", result: error.message });
+    return res.status(400).json({ message: "Something went wrong", result: error.message });
   }
 }
 
@@ -138,11 +138,22 @@ async function code_pull(req, res) {
 
 async function architecture(req, res) {
   try {
+    let architecture_message = message.
     let codeArchitecture = await architectureService.architecture(req, res, message)
   }
   catch (error) {
     console.log("error is: ", error);
     return res.status(400).json({ message: "something went wrong", result: error.message })
+  }
+}
+
+async function load_balancer(req, res){
+  try {
+    let load_massage = message.createLoadBalancer
+    let load_balancer = await architectureService.load_balancer(req, res, message)
+
+  } catch (error) {
+    
   }
 }
 

@@ -19,8 +19,7 @@ async function architecture(req, res, message ) {
         }
 
         if (subnet == 'subnet') {
-            let subnetDetail = await createArchitecture.create
-            Subnet(req, res)
+            let subnetDetail = await createArchitecture.createSubnet(req, res)
             config += subnetDetail
         }
         if (internetGateWay == 'internetGateWay') {

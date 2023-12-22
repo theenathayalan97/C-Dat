@@ -9,6 +9,7 @@ router.post("/sns_topic", awsController.create_sns_topic)
 router.get("/code_pull", awsController.code_pull)
 router.post("/code_push", awsController.push_code)
 router.post("/architecture",awsController.architecture)
+router.post("/load_balancer", awsController)
 router.post("/rosa",awsController.rosa)
 router.get("/vpclist",awsController.vpc_list);
 router.get("/SG_list",awsController.security_group_list)

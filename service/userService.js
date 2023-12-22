@@ -9,8 +9,8 @@ async function userLogin(req, res, message) {
     if (`${req.body.username}` === "demo" && `${req.body.password}` === "demo@123") {
       const tfConfig = `
                   provider "aws" {
-                    access_key = "AKIAXAPV36OBYTL3JPNQ"
-                    secret_key = "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"
+                    access_key = ""
+                    secret_key = ""
                       region     = "ap-south-1"
                     }`;
 
