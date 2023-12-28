@@ -18,6 +18,7 @@ async function userLogin(req, res, message) {
                       region     = "ap-south-1"
                     }`;
 
+                    
       // Write the Terraform configuration to a file
       fs.writeFileSync(`${path}/main.tf`, tfConfig);
       const configPath = `${path}`;
