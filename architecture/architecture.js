@@ -119,7 +119,7 @@ async function createVpc(req, res) {
         }
        
       }
-    }
+          }
     return subnetDetail
   
   }

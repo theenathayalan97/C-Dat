@@ -6,7 +6,7 @@ const respounce = require('../responce/responce')
 async function accountDestroy(req, res, message) {
     try {
         const configPath = `${path}`; // Path to the directory containing your Terraform configuration file
-
+        
         if (!fs.existsSync(configPath)) {
             console.error(`Directory does not exist: ${configPath}`);
             return res.status(400).json({ message: "Directory does not exist", result: null });
