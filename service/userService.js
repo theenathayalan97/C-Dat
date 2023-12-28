@@ -2,6 +2,10 @@ const fs = require('fs');
 const { exec } = require('child_process');
 const path = "/home/theena/project/c-dat";
 const respounce = require('../responce/responce')
+require('dotenv').config()
+
+const access_key = process.env.access_key
+const secret_key = process.env.secret_key
 
 async function userLogin(req, res, message) {
   try {
@@ -9,8 +13,8 @@ async function userLogin(req, res, message) {
     if (`${req.body.username}` === "demo" && `${req.body.password}` === "demo@123") {
       const tfConfig = `
                   provider "aws" {
-                    access_key = ""
-                    secret_key = ""
+                    access_key = "${access_key}"
+                    secret_key = "${secret_key}"
                       region     = "ap-south-1"
                     }`;
 
