@@ -1,10 +1,10 @@
 const fs = require('fs');
 const { exec } = require('child_process');
-const path = "/home/theena/project/c-dat";
+const path = require('../path');
 const respounce = require('../responce/responce')
 const createArchitecture = require('../architecture/architecture')
 
-async function architecture(req, res, message ) {
+async function architecture(req, res, message) {
     try {
         let config = []
         let vpc = req.body.vpc.vpcTittle
@@ -38,22 +38,38 @@ async function architecture(req, res, message ) {
             let ec2InstanceDetail = await createArchitecture.createEc2Instance(req, res)
             config += ec2InstanceDetail
         }
-
         const currentDate = new Date();
         const formattedDate = currentDate.toISOString().replace(/[:.]/g, '-');
 
-        const fileName = `${path}/aws_vpc_${formattedDate}.tf`;
-        fs.appendFileSync(fileName, config);
-        const configPath = `${path}`;
+        const fileName = `${path.directory}/aws_vpc_${formattedDate}.tf`;
+        fs.writeFileSync(fileName, config);
+        const configPath = `${path.directory}`;
         process.chdir(configPath);
 
+        
+        let configData = [`${JSON.stringify(req.body)}`]
+        const jsonData = JSON.parse(configData[0]);
+        // console.log("config data is : ",configData);
+        let serviceDetail = [];
+        for (const category in jsonData) {
+            const title = jsonData[category][`${category}Tittle`];
+            const tagName = jsonData[category][`${category}TagName`];
+            if (title) {
+                let perticulerService = {
+                    service_tittle: `${title}`,
+                    tag_name: `${tagName}`
+                }
+                serviceDetail.push(perticulerService)
+            }
+        }
         exec("terraform apply -auto-approve -parallelism=10", (applyError, applyStdout, applyStderr) => {
             if (applyError) {
                 console.error("Terraform Architecture created failed:", applyStderr);
                 return res.status(400).send("Terraform Architecture created failed");
             } else {
-                console.error(" Terraform Architecture created successfully ");
-                respounce.createMessage(req, res, message)
+                console.log(" Terraform Architecture created successfully ");
+                fs.unlinkSync(fileName)
+                respounce.architectureCreate(req, res, message, serviceDetail)
             }
         });
     } catch (error) {
@@ -64,7 +80,7 @@ async function architecture(req, res, message ) {
 
 function myFunction(value) {
     let result;
-  
+
     switch (value) {
         case 'Amazon Linux 2023 kernel-6.1':
             result = "ami-02a2af70a66af6dfb";
@@ -96,8 +112,8 @@ function myFunction(value) {
         default:
             result = 'Value is not recognized';
     }
-  
+
     return result;
-  }
+}
 
 module.exports = { architecture, myFunction }

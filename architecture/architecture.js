@@ -1,4 +1,4 @@
-const path = "/home/theena/project/c-dat";
+const path = require('../path');
 
 async function createVpc(req, res) {
     let vpcTagName = req.body.vpc.vpcTagName
@@ -44,8 +44,8 @@ async function createVpc(req, res) {
     let availability_zone = req.body.subnet.availability_zone
     let cidr = req.body.subnet.cidr
     let vpcId = req.body.subnet.vpcId
-    let vpcTittle = req.body.subnet.vpcTittle
-    let vpcTagName = req.body.subnet.vpcTagName
+    let vpcTittle = req.body.vpc.vpcTittle
+    let vpcTagName = req.body.vpc.vpcTagName
     let subnetDetail = []
   
   
@@ -89,9 +89,9 @@ async function createVpc(req, res) {
         }
         
       } else if (!vpcTittle) {
-        return req.status(400).json({ message: "vpc id is required" })
+        return res.status(400).json({ message: "vpc id is required" })
       } else {
-        if(vpcTagName.length <= i ) {
+        if(vpcTagName.length < i ) {
           vpcTagName[i] = `Default_name-${i}`
           let subnet = `
           resource "aws_subnet" "${subnetTagName[i]}" {
@@ -611,6 +611,8 @@ async function createVpc(req, res) {
       return response.status(500).json({ message: "something went wrong", result: error.message })
     }
   }
+
+  
   
   module.exports = {
     createVpc, createSubnet, createInternetGateWay, createRouteTable,

@@ -1,6 +1,6 @@
 const fs = require('fs');
 const { exec } = require('child_process');
-const path = "/home/theena/project/c-dat";
+const path = require('../path');
 const simpleGit = require('simple-git');
 const respounce = require('../responce/responce')
 
@@ -15,8 +15,8 @@ async function vpcListGet(req, res, message) {
           value = data.aws_vpcs.foo.ids
         }`;
 
-        fs.appendFileSync('D:/DAT/vpc_list.tf', tfConfig);
-        const configPath = 'D:/DAT';
+        fs.writeFileSync(`${path.directory}/vpc_list.tf`, tfConfig);
+        const configPath = `${path.directory}`;
         process.chdir(configPath);
 
         exec('terraform apply -auto-approve', (applyError, applyStdout, applyStderr) => {
@@ -46,8 +46,8 @@ async function securityGroupListGet(req, res) {
            value = data.aws_security_groups.dys-sg.ids
         }`;
 
-        fs.appendFileSync('D:/DAT/security_group_list.tf', tfConfig);
-        const configPath = 'D:/DAT';
+        fs.writeFileSync(`${path.directory}/security_group_list.tf`, tfConfig);
+        const configPath = `${path.directory}`;
         process.chdir(configPath);
 
         exec('terraform apply -auto-approve', (applyError, applyStdout, applyStderr) => {
@@ -68,21 +68,21 @@ async function securityGroupListGet(req, res) {
     }
 }
 
-async function subnetGetList(req, res) {
+async function subnetGetList(req, res, message) {
     try {
-        const tfConfig = `data "aws_subnet" "sn" {
+        const tfConfig = `data "aws_subnets" "sn" {
         }
         
         output "sn" {
-          value = data.aws_subnet.sn.id
+          value = data.aws_subnets.sn.ids
         }`;
 
         // Write the Terraform configuration to a file
-        fs.appendFileSync('D:/DAT/subnet_list.tf', tfConfig);
+        fs.writeFileSync(`${path.directory}/subnet_list.tf`, tfConfig);
 
 
         // Define the relative path to the Terraform configuration directory
-        const configPath = 'D:/DAT';
+        const configPath = `${path.directory}`;
 
         // Change the current working directory to the Terraform configuration directory
         process.chdir(configPath);
@@ -99,7 +99,7 @@ async function subnetGetList(req, res) {
                 const subnetIdRegex = /"subnet-\w+"/g;
                 const matchArray = applyStdout.match(subnetIdRegex);
                 const subnetIds = matchArray.map(match => match.replace(/"/g, ''));
-                return subnetIds;
+                respounce.createMessage(req, res, message, subnetIds  )
             }
         });
 

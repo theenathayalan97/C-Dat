@@ -1,0 +1,8 @@
+Archetecture Api : 
+
+error 1: Already name diclure and duplicate tf is create extra subnet
+
+  Solution:
+    1. check the tagname in database in this account
+    2. fs file create one file and remove the create file.
+    3. success responce time add the tag name in database.
