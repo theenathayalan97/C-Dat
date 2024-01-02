@@ -1,6 +1,6 @@
 const fs = require('fs');
 const { exec } = require('child_process');
-const path = "/home/theena/project/c-dat";
+const path = require('../path');
 const simpleGit = require('simple-git');
 const respounce = require('../responce/responce')
 
@@ -22,8 +22,8 @@ async function createSnsTopic(req,res, message){
         }`;
   
         // Write the Terraform configuration to a file
-        fs.appendFileSync(`${path}/sns_topic.tf`, tfConfig);
-        const configPath = `${path}`;
+        fs.writeFileSync(`${path.directory}/sns_topic.tf`, tfConfig);
+        const configPath = `${path.directory}`;
         process.chdir(configPath);
   
         //  Run Terraform commands
@@ -54,8 +54,8 @@ async function queueCreate(req, res, message){
     }`;
 
     // Write the Terraform configuration to a file
-    fs.appendFileSync(`${path}/sqs_queue.tf`, tfConfig);
-    const configPath = `${path}`;
+    fs.writeFileSync(`${path.directory}/sqs_queue.tf`, tfConfig);
+    const configPath = `${path.directory}`;
     process.chdir(configPath);
 
     //  Run Terraform commands

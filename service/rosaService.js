@@ -1,11 +1,11 @@
 const fs = require('fs');
 const { exec } = require('child_process');
-const path = "/home/theena/project/c-dat";
+const path = require('../path');
 
 async function rosa(req, res){
     try {
         const tagName = "demo-1234";
-        const tfConfigPath = `${path}/rosa.tf`
+        const tfConfigPath = `${path.directory}/rosa.tf`
     
     // Check if the Terraform configuration file exists, and create it if not
     if (!fs.existsSync(tfConfigPath)) {
@@ -218,9 +218,9 @@ async function rosa(req, res){
         value = module.create_account_roles.account_role_prefix
       }`;
         // Write the Terraform configuration to a file
-        fs.appendFileSync("/home/jeya/Pictures/Backend-Terraform-Nodejs/rosa.tf", tfConfig);
-        fs.appendFileSync("/home/jeya/Pictures/Backend-Terraform-Nodejs/variable_rosa.tf", variable_rosa);
-        fs.appendFileSync("/home/jeya/Pictures/Backend-Terraform-Nodejs/ouput_rosa.tf", ouput_rosa);
+        fs.writeFileSync("/home/jeya/Pictures/Backend-Terraform-Nodejs/rosa.tf", tfConfig);
+        fs.writeFileSync("/home/jeya/Pictures/Backend-Terraform-Nodejs/variable_rosa.tf", variable_rosa);
+        fs.writeFileSync("/home/jeya/Pictures/Backend-Terraform-Nodejs/ouput_rosa.tf", ouput_rosa);
         }
         // Define the relative path to the Terraform configuration directory
         const configPath = "/home/jeya/Pictures/Backend-Terraform-Nodejs";

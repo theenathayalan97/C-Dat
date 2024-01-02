@@ -1,11 +1,11 @@
 const fs = require('fs');
 const { exec } = require('child_process');
-const path = "/home/theena/project/c-dat";
+const path = require('../path');
 const respounce = require('../responce/responce')
 
 async function accountDestroy(req, res, message) {
     try {
-        const configPath = `${path}`; // Path to the directory containing your Terraform configuration file
+        const configPath = `${path.directory}`; // Path to the directory containing your Terraform configuration file
         
         if (!fs.existsSync(configPath)) {
             console.error(`Directory does not exist: ${configPath}`);
@@ -32,7 +32,7 @@ async function serviceDestroy(req, res, message) {
     try {
         let service = req.body.service;
         let deleteFileName = req.body.deleteFileName;
-        const configPath = `${path}`; // Path to the directory containing your Terraform configuration file
+        const configPath = `${path.directory}`; // Path to the directory containing your Terraform configuration file
 
         if (!fs.existsSync(configPath)) {
             console.error(`Directory does not exist: ${configPath}`);

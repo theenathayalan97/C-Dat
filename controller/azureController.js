@@ -12,7 +12,7 @@ async function azure_login(req, res) {
           }
         `;
         // Write the Terraform configuration to a file
-        fs.appendFileSync('/home/jeya/Music/terraform/azure_main.tf', tfConfig);
+        fs.writeFileSync('/home/jeya/Music/terraform/azure_main.tf', tfConfig);
 
         // Define the relative path to the Terraform configuration directory
         const configPath = '/home/jeya/Music/terraform';
@@ -56,7 +56,7 @@ async function resource_group(req, res) {
           }
         `;
         // Write the Terraform configuration to a file
-        fs.appendFileSync('/home/jeya/Music/terraform/azure_resource_name.tf', tfConfig);
+        fs.writeFileSync('/home/jeya/Music/terraform/azure_resource_name.tf', tfConfig);
 
         // Define the relative path to the Terraform configuration directory
         const configPath = '/home/jeya/Music/terraform';
@@ -161,7 +161,7 @@ async function virtual_network(req, res) {
           }`;
 
         // Write the Terraform configuration to a file
-        fs.appendFileSync('/home/jeya/Music/terraform/azure_Virtual_network.tf', tfConfig);
+        fs.writeFileSync('/home/jeya/Music/terraform/azure_Virtual_network.tf', tfConfig);
 
         // Define the relative path to the Terraform configuration directory
         const configPath = '/home/jeya/Music/terraform';

@@ -1,6 +1,6 @@
 const fs = require('fs');
 const { exec } = require('child_process');
-const path = "/home/theena/project/c-dat";
+const path = require('../path');
 const respounce = require('../responce/responce')
 
 async function codePush(req, res, message) {
@@ -10,7 +10,7 @@ async function codePush(req, res, message) {
         AWS.config.update({ region: 'ap-south-1' });
 
         // Change to the repository directory
-        process.chdir(`${path}`);
+        process.chdir(`${path.directory}`);
 
         console.log('Current working directory:', process.cwd());
         //credentials
