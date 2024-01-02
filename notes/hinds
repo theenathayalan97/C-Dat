@@ -11,3 +11,8 @@ error 2: how value pass in CIDR :
 
   solution:
     1.Complete learn CIDR
+
+error 3: internetGate way
+
+  1. Tag name space error through
+  2. Duplicate error
