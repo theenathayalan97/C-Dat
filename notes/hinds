@@ -16,3 +16,10 @@ error 3: internetGate way
 
   1. Tag name space error through
   2. Duplicate error
+  3. internet gate way is uniqe vpc api
+
+error 4:
+
+  1. file will not create in route table only upgrade 
+
+  solution for 1: state file delete route table is created
