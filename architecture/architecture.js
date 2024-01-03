@@ -128,20 +128,20 @@ async function createSubnet(req, res) {
 async function createInternetGateWay(req, res) {
   let vpcId = req.body.internetGateWay.vpcId
   let vpcTagName = req.body.vpc.vpcTagName
-  let internetGateWayName = req.body.internetGateWay.internetGateWayName
+  let internetGateWayTagName = req.body.internetGateWay.internetGateWayTagName
   let internetGatewayDetail = []
 
-  if (internetGateWayName.length == 0) {
+  if (internetGateWayTagName.length == 0) {
     return res.status(400).json({ message: "internet gate way name is required" })
   }
 
-  for (let i = 0; i < internetGateWayName.length; i++) {
+  for (let i = 0; i < internetGateWayTagName.length; i++) {
     if (vpcId.length > 0) {
       let internetGateWay = `
-          resource "aws_internet_gateway" "${internetGateWayName[i]}" {
+          resource "aws_internet_gateway" "${internetGateWayTagName[i]}" {
               vpc_id = "${vpcId[i]}"
               tags = {
-                Name = "${internetGateWayName[i]}"
+                Name = "${internetGateWayTagName[i]}"
               }
             }
           `
@@ -149,10 +149,10 @@ async function createInternetGateWay(req, res) {
       internetGatewayDetail += internetGateWay;
     } else if (vpcTagName.length > 0) {
       let internetGateWay = `
-      resource "aws_internet_gateway" "${internetGateWayName[i]}" {
+      resource "aws_internet_gateway" "${internetGateWayTagName[i]}" {
           vpc_id = aws_vpc.${vpcTagName[i]}.id
           tags = {
-            Name = "${internetGateWayName[i]}"
+            Name = "${internetGateWayTagName[i]}"
           }
         }
       `
@@ -173,7 +173,7 @@ async function createRouteTable(req, res) {
   let cidr = req.body.routeTable.cidr
   let internetGateWayId = req.body.routeTable.internetGateWayId
   let internetGateWayTittle = req.body.internetGateWay.internetGateWayTittle
-  let internetGateWayName = req.body.internetGateWay.internetGatewayName
+  let internetGateWayTagName = req.body.internetGateWay.internetGateWayTagName
   let private = req.body.routeTable.privateRouteTable
   let routeTableDetail = []
     // console.log("private : ",private);
@@ -223,7 +223,7 @@ async function createRouteTable(req, res) {
                       vpc_id = "${vpcId[i]}"
                       route {
                           cidr_block = "${cidr[i]}"
-                          gateway_id = aws_internet_gateway.${internetGateWayName[i]}.id
+                          gateway_id = aws_internet_gateway.${internetGateWayTagName[i]}.id
                         }
                       tags = {
                         Name = "${routeTableTagName[i]}"
@@ -247,13 +247,13 @@ async function createRouteTable(req, res) {
           routeTableDetail += routeTable;
         }
       } else if (vpcTagName) {
-        if (internetGateWayName) {
+        if (internetGateWayTagName) {
           let routeTable = `
                   resource "aws_route_table" "${routeTableTagName[i]}" {
                       vpc_id = aws_vpc.${vpcTagName[i]}.id
                       route {
                           cidr_block = "${cidr[i]}"
-                          gateway_id = aws_internet_gateway.${internetGateWayName[i]}.id
+                          gateway_id = aws_internet_gateway.${internetGateWayTagName[i]}.id
                         }
                       tags = {
                         Name = "${routeTableTagName[i]}"
