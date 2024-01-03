@@ -49,12 +49,9 @@ async function architecture(req, res, message) {
         
         let configData = [`${JSON.stringify(req.body)}`]
         const jsonData = JSON.parse(configData[0]);
-        // console.log("config data is : ",configData);
+        
         let serviceDetail = [];
-        // let valide = []
         for (const category in jsonData) {
-            // let sample = jsonData[category]
-            // valide.push(sample)
             const title = jsonData[category][`${category}Tittle`];
             const tagName = jsonData[category][`${category}TagName`];
             if (title) {
