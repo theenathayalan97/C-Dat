@@ -76,7 +76,17 @@ async function securityGroupListGet(req, res) {
                 const securityGroupIdRegex = /"sg-\w+"/g;
                 const matchArray = applyStdout.match(securityGroupIdRegex);
                 const securityGroupIds = matchArray.map(match => match.replace(/"/g, ''));
-                respounce.createMessage(req, res, message, securityGroupIds)
+                function findDuplicates(array) {
+                    let duplicateIds = [...new Set(array)]
+
+                    return duplicateIds;
+                }
+                let duplicateIds = findDuplicates(securityGroupIds);
+                if(duplicateIds.length > 0){
+                    respounce.createMessage(req, res, message, duplicateIds)
+                }else{
+                    respounce.createMessage(req, res, message, securityGroupIds)
+                }
                 // return securityGroupIds;
             }
         });
@@ -116,7 +126,17 @@ async function subnetGetList(req, res, message) {
                 const subnetIdRegex = /"subnet-\w+"/g;
                 const matchArray = applyStdout.match(subnetIdRegex);
                 const subnetIds = matchArray.map(match => match.replace(/"/g, ''));
-                respounce.createMessage(req, res, message, subnetIds)
+                function findDuplicates(array) {
+                    let duplicateIds = [...new Set(array)]
+
+                    return duplicateIds;
+                }
+                let duplicateIds = findDuplicates(subnetIds);
+                if(duplicateIds.length > 0){
+                    respounce.createMessage(req, res, message, duplicateIds)
+                }else{
+                    respounce.createMessage(req, res, message, subnetIds)
+                }
             }
         });
 
@@ -172,12 +192,32 @@ async function instanceGetList(req, res, message) {
                 console.log(applyStdout);
                 const subnetIdRegex = /"subnet-\w+"/g;
                 const matchArray = applyStdout.match(subnetIdRegex);
-                const subnetIds = matchArray.map(match => match.replace(/"/g, ''));
-                respounce.createMessage(req, res, message, subnetIds)
+                const instanceIds = matchArray.map(match => match.replace(/"/g, ''));
+                function findDuplicates(array) {
+                    let duplicateIds = [...new Set(array)]
+
+                    return duplicateIds;
+                }
+                let duplicateIds = findDuplicates(instanceIds);
+                if(duplicateIds.length > 0){
+                    respounce.createMessage(req, res, message, duplicateIds)
+                }else{
+                    respounce.createMessage(req, res, message, instanceIds)
+                }
             }
         });
     } catch (error) {
         return res.status(400).json({ message: "something went wrong ", result: error.message });
+    }
+}
+
+async function architectureSecurityGroup(req, res, message){
+    try {
+        let subnetId = req.body.ec2Instance.subnetId
+        let config = `
+        `
+    } catch (error) {
+        return res.status(400).json({ message: "something went wrong ", result: error.message})
     }
 }
 

@@ -22,21 +22,34 @@ async function createDockerInstance(req, res, message) {
             vpc_security_group_ids      = ["${security_group_id}"]
  
             user_data = <<-EOF
-              #!/bin/bash
-              sudo apt update -y
-              sudo apt install -y awscli docker.io
-              sudo usermod -aG docker ubuntu
-              echo 'sudo systemctl restart docker' | sudo tee -a /tmp/restart_docker.sh
-              sudo chmod +x /tmp/restart_docker.sh
-              sudo /tmp/restart_docker.sh
-              newgrp docker  # Switch to the "docker" group
-              sleep 10  # Wait for Docker to initialize
-              aws configure set aws_access_key_id AKIAXAPV36OBUQYXR57G
-              aws configure set aws_secret_access_key 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
-              aws configure set default.region ap-south-1
-              aws ecr get-login-password --region ap-south-1 | sudo docker login --username AWS --password-stdin 482088842115.dkr.ecr.ap-south-1.amazonaws.com
-              sudo docker pull 482088842115.dkr.ecr.ap-south-1.amazonaws.com/container-registry:latest
-              sudo docker run -d -p 9003:80 482088842115.dkr.ecr.ap-south-1.amazonaws.com/container-registry:latest
+                #!/bin/bash
+                sudo apt update -y
+                sudo apt install -y awscli docker.io
+                sudo usermod -aG docker ubuntu
+                echo 'sudo systemctl restart docker' | sudo tee -a /tmp/restart_docker.sh
+                sudo chmod +x /tmp/restart_docker.sh
+                sudo /tmp/restart_docker.sh
+                newgrp docker  # Switch to the "docker" group
+                sleep 10  # Wait for Docker to initialize
+                sudo aws configure set aws_access_key_id AKIAXAPV36OBY2Z74DVZ
+                sudo aws configure set aws_secret_access_key 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
+                sudo aws configure set default.region ap-south-1
+                sudo aws configure set default.output json
+                aws ecr get-login-password --region ap-south-1 | sudo docker login --username AWS --password-stdin 482088842115.dkr.ecr.ap-south-1.amazonaws.com
+                sudo apt install python3-pip -y
+                sudo pip install git-remote-codecommit -q
+                sleep 10
+                git clone codecommit::ap-south-1://datayaan_website2.0
+                echo cloning repo
+                sleep 30
+                cd /
+                cd datayaan_website2.0
+                cd datayaan_website2.0
+                sudo docker build -t 482088842115.dkr.ecr.ap-south-1.amazonaws.com/datayaan_container_registry .
+                sudo docker push 482088842115.dkr.ecr.ap-south-1.amazonaws.com/datayaan_container_registry:latest
+                sudo docker run -d -p 9003:80 482088842115.dkr.ecr.ap-south-1.amazonaws.com/datayaan_container_registry:latest
+                sudo docker pull 482088842115.dkr.ecr.ap-south-1.amazonaws.com/datayaan_container_registry:latest
+                
               EOF
  
             tags = {
