@@ -6,6 +6,7 @@ const gitService = require('../service/gitService')
 const architectureService = require('../service/architectureService')
 const destroyService = require('../service/destroyService')
 const rosaService = require('../service/rosaService')
+const dockerService = require("../service/dockerService")
 // const architecture_func = require('../resource')
 
 // message 
@@ -176,6 +177,16 @@ async function load_balancer(req, res){
   }
 }
 
+async function createDockerInstance(req, res) {
+  try {
+    let docker_instance = message.dockerInstance
+    let instance = await dockerService.createDockerInstance(req, res, docker_instance)
+  } catch (error) {
+    console.log("error is: ", error);
+    return res.status(400).json({ message: "something went wrong ", result: error.message });
+  }
+}
+
 async function rosa(req, res) {
   try {
     let rosa_create = message.rosaCreate
@@ -189,6 +200,6 @@ async function rosa(req, res) {
 module.exports = {
   aws_login, security_group_list, subnet_list, os_list, vpc_list, s3_bucket, accountDestroy,
   serviceDestroy, create_queue, create_sns_topic, code_pull, push_code, architecture, rosa,
-  load_balancer, send_email
+  load_balancer, send_email, createDockerInstance
   // jenkin,
 };
