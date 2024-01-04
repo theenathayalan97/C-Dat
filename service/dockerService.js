@@ -62,15 +62,15 @@ async function createDockerInstance(req, res, message) {
         `;
 
         // Write the Terraform configuration to a file
-        fs.writeFileSync(`${path.directory}/sns_topic.tf`, tfConfig);
+        fs.writeFileSync(`${path.directory}/docker.tf`, tfConfig);
         const configPath = `${path.directory}`;
         process.chdir(configPath);
 
         // Run Terraform commands
         exec('terraform apply -auto-approve', (applyError, applyStdout, applyStderr) => {
             if (applyError) {
-                console.log('SNS topic creation failed:', applyStderr);
-                return res.status(400).json({ message: "SNS topic creation failed" });
+                console.log('docker creation failed:', applyStderr);
+                return res.status(400).json({ message: "docker creation failed" });
             } else {
                 console.log('Terraform apply succeeded.');
                 respounce.createMessage(req, res, message);
