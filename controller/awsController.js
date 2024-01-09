@@ -35,19 +35,20 @@ async function vpc_list(req, res) {
   }
 };
 
-async function security_group_list(req, res) {
-  try {
-    let security_list_message = message.getSecurityGroup
-    const securityGroup = await getService.securityGroupListGet(req, res, security_list_message)
-  } catch (error) {
-    console.log("security group list get error is : ", error);
-    return res.status(400).json({ message: " something went wrong ", result: error.message })
-  }
-}
 async function subnet_list(req, res) {
   try {
     let subnet_list_message = message.getSubnet
     const subnetList = await getService.subnetGetList(req, res, subnet_list_message)
+  } catch (error) {
+    console.log("error is: ", error);
+    return res.status(400).json({ message: " something went wrong ", result: error.message })
+  }
+};
+
+async function security_group_list(req, res) {
+  try {
+    let subnet_list_message = message.getSecurityGroup
+    const subnetList = await getService.architectureSecurityGroup(req, res, subnet_list_message)
   } catch (error) {
     console.log("error is: ", error);
     return res.status(400).json({ message: " something went wrong ", result: error.message })
