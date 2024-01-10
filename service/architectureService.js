@@ -68,9 +68,13 @@ async function architecture(req, res, message) {
         // console.log("valide : ",config);
         exec("terraform apply -auto-approve -parallelism=10", (applyError, applyStdout, applyStderr) => {
             if (applyError) {
-                console.error("Terraform Architecture created failed:", applyStderr);
+                if(applyStderr.includes("already has an internet gateway attached")){
+                    return res.status(400).send("already has an internet gateway attached");
+                }else{
+                    console.error("Terraform Architecture created failed:", applyStderr);
                 fs.unlinkSync(fileName)
                 return res.status(400).send("Terraform Architecture created failed");
+                }   
             } else {
                 console.log(" Terraform Architecture created successfully ");
                 fs.unlinkSync(fileName)
