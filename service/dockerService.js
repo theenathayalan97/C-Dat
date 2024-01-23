@@ -6,17 +6,16 @@ const respounce = require('../responce/responce')
 async function createDockerInstance(req, res, message) {
     try {
         let instance_name = req.body.instanceTagName
-        let ami = req.body.instanceTagName
+        let ami = req.body.ami
         let instance_type = req.body.instanceType
         let subnet_id = req.body.subnetId
         let security_group_id = req.body.securityGroupId
-        let public_ip = req.body.publicIp
+        let public_ip = req.body.publicIp //boolearn
         let key_name = req.body.keyName
         const tfConfig = ` 
             resource "aws_instance" "${instance_name}" {
             ami                         = "${ami}"
-            instance_type               = "${instance_type}"              
-            key_name                    = "${key_name}"        
+            instance_type               = "${instance_type}"        
             associate_public_ip_address = ${public_ip}
             subnet_id                   = "${subnet_id}"
             vpc_security_group_ids      = ["${security_group_id}"]
@@ -65,8 +64,8 @@ async function createDockerInstance(req, res, message) {
                 connection {
                 type        = "ssh"
                 user        = "ubuntu"
-                host        = aws_instance.dockerServer.public_ip
-                private_key = file("${path}/Jenkins.pem")
+                host        = aws_instance.${instance_name}.public_ip
+                private_key = file("${path.directory}/Jenkins.pem")
                 agent       = false
                 }
             }
@@ -159,11 +158,11 @@ async function containerDeploy(req, res){
             name               = "load-balancer-dev" #load balancer name
             load_balancer_type = "application"
             subnets = [
-              "${aws_default_subnet.default_subnet_a.id}",
-              "${aws_default_subnet.default_subnet_b.id}"
+              "aws_default_subnet.default_subnet_a.id",
+              "aws_default_subnet.default_subnet_b.id"
             ]
             # security group
-            security_groups = ["${aws_security_group.load_balancer_security_group.id}"]
+            security_groups = ["aws_security_group.load_balancer_security_group.id"]
           }
 
           resource "aws_security_group" "service_security_group" {
@@ -172,7 +171,7 @@ async function containerDeploy(req, res){
               to_port   = 0
               protocol  = "-1"
               # Only allowing traffic in from the load balancer security group
-              security_groups = ["${aws_security_group.load_balancer_security_group.id}"]
+              security_groups = ["aws_security_group.load_balancer_security_group.id"]
             }
            
             egress {
@@ -188,36 +187,36 @@ async function containerDeploy(req, res){
             port        = 80
             protocol    = "HTTP"
             target_type = "ip"
-            vpc_id      = "${aws_default_vpc.default_vpc.id}"
+            vpc_id      = "aws_default_vpc.default_vpc.id"
           }
            
           resource "aws_lb_listener" "listener" {
-            load_balancer_arn = "${aws_alb.application_load_balancer.arn}"
+            load_balancer_arn = "aws_alb.application_load_balancer.arn"
             port              = "80"
             protocol          = "HTTP"
             default_action {
               type             = "forward"
-              target_group_arn = "${aws_lb_target_group.target_group.arn}"
+              target_group_arn = "aws_lb_target_group.target_group.arn"
             }
           }
            
           resource "aws_ecs_service" "app_service" {
             name            = "app-first-service"    
-            cluster         = "${aws_ecs_cluster.my_cluster.id}"  
-            task_definition = "${aws_ecs_task_definition.app_task.arn}"
+            cluster         = "aws_ecs_cluster.my_cluster.id}"  
+            task_definition = "aws_ecs_task_definition.app_task.arn}"
             launch_type     = "FARGATE"
             desired_count   = 2 # Set up the number of containers to 3
            
             load_balancer {
-              target_group_arn = "${aws_lb_target_group.target_group.arn}"
-              container_name   = "${aws_ecs_task_definition.app_task.family}"
+              target_group_arn = "aws_lb_target_group.target_group.arn"
+              container_name   = "aws_ecs_task_definition.app_task.family"
               container_port   = 80
             }
            
             network_configuration {
-              subnets          = ["${aws_default_subnet.default_subnet_a.id}", "${aws_default_subnet.default_subnet_b.id}"]
+              subnets          = ["aws_default_subnet.default_subnet_a.id", "aws_default_subnet.default_subnet_b.id"]
               assign_public_ip = true    
-              security_groups  = ["${aws_security_group.service_security_group.id}"]
+              security_groups  = ["aws_security_group.service_security_group.id"]
             }
           }
            

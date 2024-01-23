@@ -44,7 +44,7 @@ async function userLogin(req, res, message) {
   }
 }
 
-async function s3_bucket_creation(req, res) {
+async function s3_bucket_creation(req, res, message) {
   try {
     const bucketname = req.body.bucket_name;
     if (!bucketname) {
@@ -52,25 +52,15 @@ async function s3_bucket_creation(req, res) {
     }
     const tfConfigPath = `${path.directory}/s3_bucket.tf`;
 
-    // Check if the Terraform configuration file exists, and create it if not
-    if (!fs.existsSync(tfConfigPath)) {
-      fs.writeFileSync(tfConfigPath, ''); // Create an empty file
-    }
-    const tfContent = fs.readFileSync(tfConfigPath, 'utf8');
-    if (tfContent.includes(`"${bucketname}"`)) {
-      console.log(`S3 with the name "${bucketname}" already exists in the configuration.`);
-      return res.status(400).send(`S3 with the name "${bucketname}" already exists in the configuration.`)
-    } else {
-      const tfConfig = `
+    const tfConfig = `
       resource "aws_s3_bucket" "${req.body.bucket_name}" {
           bucket =  "${req.body.bucket_name}"
           lifecycle {
                   prevent_destroy = true
                 } 
         }`;
-      // Write the Terraform configuration to a file
-      fs.writeFileSync(`${path.directory}/s3_bucket.tf`, tfConfig);
-    }
+    // Write the Terraform configuration to a file
+    fs.writeFileSync(`${path.directory}/s3_bucket.tf`, tfConfig);
     const configPath = `${path.directory}`;
     process.chdir(configPath);
 
@@ -79,7 +69,8 @@ async function s3_bucket_creation(req, res) {
         console.error('Terraform S3 Bucket creation failed:', applyStderr);
         return res.status(400).json({ message: "Terraform S3 Bucket creation failed" });
       } else {
-        return true;
+        console.log('Terraform apply succeeded.');
+        respounce.createMessage(req, res, message)
       }
     });
   }

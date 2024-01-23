@@ -92,6 +92,57 @@ async function architecture(req, res, message) {
     }
 }
 
+async function loadbancer(req, res) {
+    try {
+      let targetGroupTagName = req.body.loadbancer.targetGroupTagName
+      let loadbancerTagName = req.body.loadbancer.loadbancerTagName
+      let vpcId = req.body.loadbancer.vpcId
+      let instanceId = req.body.loadbancer.instanceId
+      let subnetId = req.body.loadbancer.subnetId
+  
+      if (!targetGroupTagName) {
+        return res.status(400).json({ message: "only one loadbancer target group name is specified" })
+      }
+      if (!vpcId) {
+        return res.status(400).json({ message: "Vpc id is required" })
+      }
+      if ((subnetId.length == 0) && (subnetId.length > 2)) {
+        return res.status(400).json({ message: "only two subnet id is specified" });
+      }
+  
+      let loadbancer = `
+        resource "aws_lb_target_group" "${targetGroupTagName}" {
+          name     = "${targetGroupTagName}"
+          port     = 80
+          protocol = "HTTP"
+          vpc_id   = "${vpcId}"
+        }
+         
+        // attach instance in load balance
+        resource "aws_lb_target_group_attachment" "test" {
+          target_group_arn = "aws_lb_target_group.${targetGroupTagName}.arn"
+          target_id        = "${instanceId}"
+          port             = 80
+        }
+         
+        //load balance create
+        resource "aws_lb" "${loadbancerTagName}" {
+          name               = "${loadbancerTagName}"
+          internal           = false
+          # load_balancer_type = "network"
+          subnets            = [ "${subnetId[0]}", "${subnetId[1]}"]
+         
+          # enable_deletion_protection = true
+         
+          tags = {
+            Environment = "production"
+          }
+        }
+        `
+      return loadbancer;
+    } catch (error) {
+      return res.status(500).json({ message: "something went wrong", result: error.message })
+    }
+  }
 
-
-module.exports = { architecture }
+module.exports = { architecture, loadbancer }

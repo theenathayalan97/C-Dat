@@ -52,7 +52,7 @@ async function queueCreate(req, res, message) {
       visibility_timeout_seconds = 30
       delay_seconds             = 30
       max_message_size          = 2048
-      message_retention_seconds = 86400
+      message_retention_seconds = 86400 
       receive_wait_time_seconds = 10
     }`;
 

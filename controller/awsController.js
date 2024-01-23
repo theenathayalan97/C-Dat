@@ -52,6 +52,16 @@ async function subnet_list(req, res) {
 async function security_group_list(req, res) {
   try {
     let subnet_list_message = message.getSecurityGroup
+    const subnetList = await getService.securityGroupListGet(req, res, subnet_list_message)
+  } catch (error) {
+    console.log("error is: ", error);
+    return res.status(400).json({ message: " something went wrong ", result: error.message })
+  }
+};
+
+async function architectureSecurity_group_list(req, res) {
+  try {
+    let subnet_list_message = message.getSecurityGroup
     const subnetList = await getService.architectureSecurityGroup(req, res, subnet_list_message)
   } catch (error) {
     console.log("error is: ", error);
@@ -184,7 +194,7 @@ async function architecture(req, res) {
 async function load_balancer(req, res){
   try {
     let load_massage = message.createLoadBalancer
-    let load_balancer = await architectureService.load_balancer(req, res, message)
+    let load_balancer = await architectureService.loadbancer(req, res, message)
 
   } catch (error) {
     console.log("error is: ", error);
@@ -251,7 +261,7 @@ module.exports = {
   aws_login, security_group_list, subnet_list, os_list, vpc_list, s3_bucket, accountDestroy,
   serviceDestroy, create_queue, create_sns_topic, code_pull, push_code, architecture, rosa,
   load_balancer, send_email, createDockerInstance, createContainerDeploy, internet_gate_way_list, jenkinsPipeline,
-  appRunner, ebs, code_pipeline
+  appRunner, ebs, code_pipeline, architectureSecurity_group_list
   
   // jenkin,
 };
