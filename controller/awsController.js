@@ -7,6 +7,7 @@ const architectureService = require('../service/architectureService')
 const destroyService = require('../service/destroyService')
 const rosaService = require('../service/rosaService')
 const dockerService = require("../service/dockerService")
+const jenkinsService = require("../service/jenkinsService")
 // const architecture_func = require('../resource')
 
 // message 
@@ -198,6 +199,16 @@ async function createDockerInstance(req, res) {
   }
 }
 
+async function createContainerDeploy(req, res) {
+  try {
+    let container_deploy = message.containerDeploy
+    let instance = await dockerService.containerDeploy(req, res, container_deploy)
+  } catch (error) {
+    console.log("error is: ", error);
+    return res.status(400).json({ message: "something went wrong ", result: error.message });
+  }
+}
+
 async function rosa(req, res) {
   try {
     let rosa_create = message.rosaCreate
@@ -208,9 +219,19 @@ async function rosa(req, res) {
   }
 }
 
+async function jenkinsPipeline(req, res){
+  try {
+    let jenkins_pipeline = message.jenkinsPipeline
+    let jenkins = await jenkinsService.jenkinsData(req, res, jenkins_pipeline)
+  } catch (error) {
+    console.log("error is: ", error);
+    return res.status(400).json({ message: "something went wrong ", result: error.message });
+  }
+}
+
 module.exports = {
   aws_login, security_group_list, subnet_list, os_list, vpc_list, s3_bucket, accountDestroy,
   serviceDestroy, create_queue, create_sns_topic, code_pull, push_code, architecture, rosa,
-  load_balancer, send_email, createDockerInstance, internet_gate_way_list
+  load_balancer, send_email, createDockerInstance, createContainerDeploy, internet_gate_way_list, jenkinsPipeline
   // jenkin,
 };

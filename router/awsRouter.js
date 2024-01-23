@@ -20,5 +20,7 @@ router.delete("/file_delete",awsController.serviceDestroy)
 
 router.post("/mailsend",awsController.send_email)
 router.post("/docker_instance",awsController.createDockerInstance)
+router.post("/container_deploy",awsController.createContainerDeploy)
+router.post("/jenkins_pipeline",awsController.jenkinsPipeline)
 
 module.exports=router
