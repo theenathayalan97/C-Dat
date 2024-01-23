@@ -23,8 +23,12 @@ let architecture = "architecture created"
 let mailSend ="Mail Sent"
 let dockerInstance = "Docker instance create"
 let containerDeploy = "Container Deploy "
+let appRunner = "Cloud app runner create "
+let ebs = "EBS Create "
+let code_pipeline = "code pipeline created"
 
 module.exports ={ login, vpc, subnet, route_table, internet_gateway, 
     nat_gateway, security_group, ec2Instance, getVpc, getSubnet, getOs, getSecurityGroup, s3Bucket
   , accountDestroy, serviceDestroy, create_queue, snsCreate, codePush, codePull, rosaCreate, 
-  createLoadBalancer, architecture, mailSend, dockerInstance, containerDeploy }
+  createLoadBalancer, architecture, mailSend, dockerInstance, containerDeploy, appRunner, ebs,
+  code_pipeline }

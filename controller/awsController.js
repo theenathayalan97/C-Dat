@@ -8,6 +8,9 @@ const destroyService = require('../service/destroyService')
 const rosaService = require('../service/rosaService')
 const dockerService = require("../service/dockerService")
 const jenkinsService = require("../service/jenkinsService")
+const appRunnerService = require('../service/appRunner')
+const ebsService = require('../service/ebsService')
+const codePipelineService = require('../service/codePipelineService')
 // const architecture_func = require('../resource')
 
 // message 
@@ -229,9 +232,26 @@ async function jenkinsPipeline(req, res){
   }
 }
 
+async function appRunner(req, res){
+    let cloud_appRunner = message.appRunner
+    let runner = await appRunnerService.appRunner(req, res, cloud_appRunner)
+}
+
+async function ebs(req, res){
+  let cloud_ebs= message.ebs
+  let beanstrackService = await ebsService.ebs(req, res, cloud_ebs)
+}
+
+async function code_pipeline(req, res){
+  let cloud_pipeline= message.code_pipeline
+  let codePipeLineService = await codePipelineService.codePipeline(req, res, cloud_pipeline)
+}
+
 module.exports = {
   aws_login, security_group_list, subnet_list, os_list, vpc_list, s3_bucket, accountDestroy,
   serviceDestroy, create_queue, create_sns_topic, code_pull, push_code, architecture, rosa,
-  load_balancer, send_email, createDockerInstance, createContainerDeploy, internet_gate_way_list, jenkinsPipeline
+  load_balancer, send_email, createDockerInstance, createContainerDeploy, internet_gate_way_list, jenkinsPipeline,
+  appRunner, ebs, code_pipeline
+  
   // jenkin,
 };

@@ -22,5 +22,8 @@ router.post("/mailsend",awsController.send_email)
 router.post("/docker_instance",awsController.createDockerInstance)
 router.post("/container_deploy",awsController.createContainerDeploy)
 router.post("/jenkins_pipeline",awsController.jenkinsPipeline)
+router.post("/cloud_app_runner",awsController.appRunner)
+router.post("/ebs",awsController.ebs)
+router.post("/code_pipeline",awsController.code_pipeline)
 
 module.exports=router
