@@ -4,7 +4,7 @@ pipeline {
     environment {
 
         script {
-            def data = load("index.js")
+            def data = load("jenkinsService.js")
             AWS_DEFAULT_REGION = data.findValue.AWS_DEFAULT_REGION
             AWS_ACCOUNT_ID = data.findValue.AWS_ACCOUNT_ID
             CODECOMMIT_REPO_URL = data.findValue.CODECOMMIT_REPO_URL
