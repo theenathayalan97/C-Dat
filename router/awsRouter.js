@@ -15,13 +15,13 @@ router.post("/code_push", awsController.push_code)
 router.post("/load_balancer", awsController.load_balancer)
 router.delete("/account_delete",awsController.accountDestroy)
 router.delete("/file_delete",awsController.serviceDestroy)
+router.post("/docker_instance",awsController.createDockerInstance)
 
 //process
 router.post("/architecture",awsController.architecture)
 
 //deploy process
 // router.post("/mailsend",awsController.send_email)
-router.post("/docker_instance",awsController.createDockerInstance)
 router.post("/container_deploy",awsController.createContainerDeploy)
 router.post("/jenkins_pipeline",awsController.jenkinsPipeline)
 router.post("/cloud_app_runner",awsController.appRunner)

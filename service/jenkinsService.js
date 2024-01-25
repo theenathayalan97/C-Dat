@@ -17,7 +17,7 @@ async function jenkinsData(req, res) {
           }
           
           provider "jenkins" {
-            server_url = "http://3.108.41.34:8080/"  # Specify the correct Jenkins server URL
+            server_url = "http://3.110.190.188:80/"  # Specify the correct Jenkins server URL
             username   = "root"
             password   = "root"
           }
@@ -37,7 +37,7 @@ async function jenkinsData(req, res) {
         findValue.CODECOMMIT_REPO_URL = 'https=//git-codecommit.ap-south-1.amazonaws.com/v1/repos/datayaan_website2.0'
         findValue.ECR_REPO_NAME = 'datayaan_container_registry'
         findValue.DOCKER_IMAGE_NAME = 'datayaan_container_registry'
-        findValue.DOCKER_HOST_IP = '3.108.41.34'
+        findValue.DOCKER_HOST_IP = '3.110.190.188'
         findValue.DOCKER_HOST_PORT = '8000'
         findValue.YOUR_CONTAINER = '482088842115.dkr.ecr.ap-south-1.amazonaws.com/datayaan_container_registry'
         // AWS_CREDENTIALS= credentials('aws_provider'),// Use the ID you set in Jenkins credentials

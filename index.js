@@ -22,7 +22,7 @@ const port = 8000
 //server port 
 app.listen(port,()=>{
     exec('terraform init -upgrade',()=>{
-        console.log("terraform inisialization success");
+        console.log("terraform initialization success");
     })
     console.log("Server has started successfully")
 })
