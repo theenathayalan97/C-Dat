@@ -127,8 +127,8 @@ async function codePipeline(req, res, message){
               ]
           
               resources =  [
-                  "${aws_s3_bucket.codepipeline_bucket.arn}",
-                  "${aws_s3_bucket.codepipeline_bucket.arn}/*"
+                  "arn:aws:s3:::test-bucket-123-cdat-ebs",
+                  "arn:aws:s3:::test-bucket-123-cdat-ebs/*"
                 ]
             }
               statement {

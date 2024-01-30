@@ -1,34 +1,36 @@
 const awsController = require("../controller/awsController")
+const middleware= require('../middleware/auth')
 const router=require("express").Router();
 
 // finish router
-router.post("/login",awsController.aws_login)
-router.post("/s3_bucket",awsController.s3_bucket)
-router.get("/vpclist",awsController.vpc_list);
-router.get("/SG_list",awsController.security_group_list)
-router.get("/subnet_list",awsController.subnet_list)
-router.get("/os_list",awsController.os_list)
-router.post("/queue_creation", awsController.create_queue)
-router.post("/sns_topic", awsController.create_sns_topic)
-router.get("/code_pull", awsController.code_pull)
-router.post("/code_push", awsController.push_code)
-router.post("/load_balancer", awsController.load_balancer)
-router.delete("/account_delete",awsController.accountDestroy)
-router.delete("/file_delete",awsController.serviceDestroy)
-router.post("/docker_instance",awsController.createDockerInstance)
-
-//process
-router.post("/architecture",awsController.architecture)
+router.post("/login", middleware.authorization, middleware.authentication(['admin'],true), awsController.aws_login);
+router.post("/s3_bucket", middleware.authorization, middleware.authentication(['admin'],true),awsController.s3_bucket)
+router.get("/vpclist", middleware.authorization, middleware.authentication(['admin'],true),awsController.vpc_list);
+router.get("/SG_list", middleware.authorization, middleware.authentication(['admin'],true),awsController.security_group_list)
+router.get("/subnet_list", middleware.authorization, middleware.authentication(['admin'],true),awsController.subnet_list)
+router.get("/os_list", middleware.authorization, middleware.authentication(['admin'],true),awsController.os_list)
+router.post("/queue_creation", middleware.authorization, middleware.authentication(['admin'],true), awsController.create_queue)
+router.post("/sns_topic", middleware.authorization, middleware.authentication(['admin'],true), awsController.create_sns_topic)
+router.get("/code_pull", middleware.authorization, middleware.authentication(['admin'],true), awsController.code_pull)
+router.post("/code_push", middleware.authorization, middleware.authentication(['admin'],true), awsController.push_code)
+router.post("/load_balancer", middleware.authorization, middleware.authentication(['admin'],true), awsController.load_balancer)
+router.delete("/account_delete", middleware.authorization, middleware.authentication(['admin'],true),awsController.accountDestroy)
+router.delete("/file_delete", middleware.authorization, middleware.authentication(['admin'],true),awsController.serviceDestroy)
 
 //deploy process
-// router.post("/mailsend",awsController.send_email)
-router.post("/container_deploy",awsController.createContainerDeploy)
-router.post("/jenkins_pipeline",awsController.jenkinsPipeline)
-router.post("/cloud_app_runner",awsController.appRunner)
-router.post("/ebs",awsController.ebs)
-router.post("/code_pipeline",awsController.code_pipeline)
+router.post("/docker_instance", middleware.authorization, middleware.authentication(['admin'],true),awsController.createDockerInstance) //ECR
+router.post("/container_deploy", middleware.authorization, middleware.authentication(['admin'],true),awsController.createContainerDeploy) //ECS
+router.post("/cloud_app_runner", middleware.authorization, middleware.authentication(['admin'],true),awsController.appRunner) //App runner
+router.post("/jenkins_pipeline", middleware.authorization, middleware.authentication(['admin'],true),awsController.jenkinsPipeline) //Jenkins
+router.post("/ebs", middleware.authorization, middleware.authentication(['admin'],true),awsController.ebs) //EBS
+
+//process
+router.post("/architecture", middleware.authorization, middleware.authentication(['admin'],true),awsController.architecture)
+
+//deploy process
+router.post("/code_pipeline", middleware.authorization, middleware.authentication(['admin'],true),awsController.code_pipeline)
 
 //Not using below router
-router.post("/rosa",awsController.rosa)
+router.post("/rosa", middleware.authorization, middleware.authentication(['admin'],true),awsController.rosa)
 
 module.exports=router

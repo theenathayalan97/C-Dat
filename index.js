@@ -1,6 +1,8 @@
 const express = require("express")
 let bodyParser = require('body-parser')
 const { exec } = require('child_process');
+const dotenv = require('dotenv').config()
+// require('./Connections/Database')
 var app=express();
 
 app.use(express.json());

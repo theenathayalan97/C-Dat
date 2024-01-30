@@ -2,9 +2,13 @@ const fs = require('fs');
 const { exec } = require('child_process');
 const path = require('../path');
 const respounce = require('../responce/responce')
+const {v4 : uuidv4} = require('uuid')
 
 async function ebs(req, res, message){
     try {
+      const newId = uuidv4()
+      const s3BucketArn = "arn:aws:s3:::cdat-s3-bucket-name-ebs";
+
         let tfConfig = `
         resource "aws_s3_bucket" "example" {
             bucket = "cdat-s3-bucket-name-ebs"
@@ -12,8 +16,8 @@ async function ebs(req, res, message){
           
           resource "aws_s3_object" "deployment_package" {
             bucket = aws_s3_bucket.example.id
-            key    = "bean/cdat-terraform.zip-${uuid()}"
-            source = "/home/jeya/Videos/cdat-terraform.zip"
+            key    = "bean/cdat-terraform.zip-${newId}"
+            source = "${path.directory}/cdat-terraform.zip"
           }
           
           resource "aws_elastic_beanstalk_application" "example" {
@@ -68,7 +72,7 @@ async function ebs(req, res, message){
                   "s3:GetObject",
                   "s3:PutObject"
                 ],
-                "Resource": "${aws_s3_bucket.example.arn}/*"
+                "Resource": "${s3BucketArn}/*"
               }
             ]
           }
@@ -94,5 +98,68 @@ async function ebs(req, res, message){
         return res.status(400).json({ message: "something went wrong ", result: error.message });
     }
 }
+
+// async function ebs(req, res, message) {
+//   try {
+//       const newId = uuidv4();
+
+//       // Assume you have already created the S3 bucket and have its ARN
+//       const s3BucketArn = "arn:aws:s3:::cdat-s3-bucket-name-ebs";
+
+//       let tfConfig = `
+//       resource "aws_s3_bucket" "example" {
+//           bucket = "cdat-s3-bucket-name-ebs"
+//       }
+
+//       resource "aws_s3_object" "deployment_package" {
+//           bucket = aws_s3_bucket.example.id
+//           key    = "bean/cdat-terraform.zip-${newId}"
+//           source = "${path.directory}/cdat-terraform.zip"
+//       }
+
+//       // ... rest of the Terraform script ...
+
+//       resource "aws_s3_bucket_policy" "example" {
+//           bucket = aws_s3_bucket.example.id
+
+//           policy = <<EOF
+//           {
+//               "Version": "2012-10-17",
+//               "Statement": [
+//                   {
+//                       "Effect": "Allow",
+//                       "Principal": {
+//                           "Service": "elasticbeanstalk.amazonaws.com"
+//                       },
+//                       "Action": [
+//                           "s3:GetObject",
+//                           "s3:PutObject"
+//                       ],
+//                       "Resource": "${s3BucketArn}/*"
+//                   }
+//               ]
+//           }
+//           EOF
+//       }
+//       `;
+
+//       fs.writeFileSync(`${path.directory}/ebs.tf`, tfConfig);
+//       const configPath = `${path.directory}`;
+//       process.chdir(configPath);
+
+//       // Run Terraform commands
+//       exec('terraform apply -auto-approve', (applyError, applyStdout, applyStderr) => {
+//           if (applyError) {
+//               console.log('ebs creation failed:', applyStderr);
+//               return res.status(400).json({ message: "ebs creation failed" });
+//           } else {
+//               console.log('Terraform apply succeeded.');
+//               respounce.createMessage(req, res, message);
+//           }
+//       });
+//   } catch (error) {
+//       return res.status(400).json({ message: "something went wrong ", result: error.message });
+//   }
+// }
 
 module.exports = { ebs }
