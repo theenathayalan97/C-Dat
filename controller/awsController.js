@@ -14,7 +14,7 @@ const codePipelineService = require('../service/codePipelineService')
 // const architecture_func = require('../resource')
 
 // message 
-let message = require('../responce/message')
+let message = require('../response/message')
 
 
 //AWS LOGIN
@@ -255,13 +255,19 @@ async function ebs(req, res){
 async function code_pipeline(req, res){
   let cloud_pipeline= message.code_pipeline
   let codePipeLineService = await codePipelineService.codePipeline(req, res, cloud_pipeline)
+  keyPair
+}
+
+async function key_pair(req, res){
+  let key_pair_message= message.keyPair
+  let keyPairService = await architectureService.keyPair(req, res, key_pair_message)
 }
 
 module.exports = {
   aws_login, security_group_list, subnet_list, os_list, vpc_list, s3_bucket, accountDestroy,
   serviceDestroy, create_queue, create_sns_topic, code_pull, push_code, architecture, rosa,
   load_balancer, send_email, createDockerInstance, createContainerDeploy, internet_gate_way_list, jenkinsPipeline,
-  appRunner, ebs, code_pipeline, architectureSecurity_group_list
+  appRunner, ebs, code_pipeline, architectureSecurity_group_list,key_pair
   
   // jenkin,
 };

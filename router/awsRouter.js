@@ -14,6 +14,7 @@ router.post("/sns_topic", middleware.authorization, middleware.authentication(['
 router.get("/code_pull", middleware.authorization, middleware.authentication(['admin'],true), awsController.code_pull)
 router.post("/code_push", middleware.authorization, middleware.authentication(['admin'],true), awsController.push_code)
 router.post("/load_balancer", middleware.authorization, middleware.authentication(['admin'],true), awsController.load_balancer)
+router.post("/key_pair", middleware.authorization, middleware.authentication(['admin'],true), awsController.key_pair)
 router.delete("/account_delete", middleware.authorization, middleware.authentication(['admin'],true),awsController.accountDestroy)
 router.delete("/file_delete", middleware.authorization, middleware.authentication(['admin'],true),awsController.serviceDestroy)
 

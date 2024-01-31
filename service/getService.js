@@ -2,7 +2,7 @@ const fs = require('fs');
 const { exec } = require('child_process');
 const path = require('../path');
 const simpleGit = require('simple-git');
-const respounce = require('../responce/responce')
+const respounce = require('../response/response')
 
 
 // Get list of AWS services

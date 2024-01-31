@@ -1,7 +1,7 @@
 const fs = require('fs');
 const { exec } = require('child_process');
 const path = require('../path');
-const respounce = require('../responce/responce')
+const respounce = require('../response/response')
 const {v4 : uuidv4} = require('uuid')
 
 async function ebs(req, res, message){

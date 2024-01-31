@@ -1,10 +1,10 @@
 const fs = require('fs');
 const { exec } = require('child_process');
 const path = require('../path');
-const respounce = require('../responce/responce')
+const respounce = require('../response/response')
 
 
-async function jenkinsData(req, res) {
+async function jenkinsData(req, res, message) {
     try {
         const tfConfig = `
         terraform {
@@ -17,13 +17,13 @@ async function jenkinsData(req, res) {
           }
           
           provider "jenkins" {
-            server_url = "http://3.110.190.188:80/"  # Specify the correct Jenkins server URL
+            server_url = "http://3.109.181.119:8080/"  # Specify the correct Jenkins server URL
             username   = "root"
             password   = "root"
           }
           
           resource "jenkins_job" "dys_jenkins" {
-            name     = "dys_jenkins-1"
+            name     = "dys_jenkins"
             template = file("job.xml")
           }`
 
@@ -34,14 +34,14 @@ async function jenkinsData(req, res) {
         let findValue = {}
         findValue.AWS_DEFAULT_REGION = 'ap-south-1'
         findValue.AWS_ACCOUNT_ID = '482088842115'
-        findValue.CODECOMMIT_REPO_URL = 'https=//git-codecommit.ap-south-1.amazonaws.com/v1/repos/datayaan_website2.0'
-        findValue.ECR_REPO_NAME = 'datayaan_container_registry'
-        findValue.DOCKER_IMAGE_NAME = 'datayaan_container_registry'
-        findValue.DOCKER_HOST_IP = '3.110.190.188'
-        findValue.DOCKER_HOST_PORT = '8000'
-        findValue.YOUR_CONTAINER = '482088842115.dkr.ecr.ap-south-1.amazonaws.com/datayaan_container_registry'
+        findValue.CODECOMMIT_REPO_URL = 'https://git-codecommit.ap-south-1.amazonaws.com/v1/repos/datayaan_website2.0'
+        findValue.ECR_REPO_NAME = 'sample-repo'
+        findValue.DOCKER_IMAGE_NAME = 'sample-repo'
+        findValue.DOCKER_HOST_IP = '13.233.110.194'
+        findValue.DOCKER_HOST_PORT = '80'
+        findValue.YOUR_CONTAINER = '482088842115.dkr.ecr.ap-south-1.amazonaws.com/sample-repo'
         // AWS_CREDENTIALS= credentials('aws_provider'),// Use the ID you set in Jenkins credentials
-        findValue.IMAGE_TAG = "datayaan_container_registry"
+        findValue.IMAGE_TAG = "sample-repo"
 
 
 

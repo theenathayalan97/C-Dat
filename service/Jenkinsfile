@@ -13,25 +13,35 @@ pipeline {
             DOCKER_HOST_IP = data.findValue.DOCKER_HOST_IP
             DOCKER_HOST_PORT = data.findValue.DOCKER_HOST_PORT
             YOUR_CONTAINER = data.findValue.YOUR_CONTAINER
-            // AWS_CREDENTIALS = data.AWS_CREDENTIALS
+            // AWS_CREDENTIALS = credentials('aws_accesskey')
+            AWS_ACCESS_KEY_ID = 'AKIAXAPV36OBZ4Q4EV6K'
+            AWS_SECRET_ACCESS_KEY = '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'
             IMAGE_TAG = data.findValue.IMAGE_TAG
         }
         // AWS_DEFAULT_REGION = 'ap-south-1'
         // AWS_ACCOUNT_ID = '482088842115'
         // CODECOMMIT_REPO_URL = 'https://git-codecommit.ap-south-1.amazonaws.com/v1/repos/datayaan_website2.0'
-        // ECR_REPO_NAME = 'datayaan_container_registry'
-        // DOCKER_IMAGE_NAME = 'datayaan_container_registry'
+        // ECR_REPO_NAME = 'sample-repo'
+        // DOCKER_IMAGE_NAME = 'sample-repo'
         // DOCKER_HOST_IP = '3.108.41.34'
         // DOCKER_HOST_PORT = '9003'
-        // YOUR_CONTAINER = '482088842115.dkr.ecr.ap-south-1.amazonaws.com/datayaan_container_registry'
+        // YOUR_CONTAINER = '482088842115.dkr.ecr.ap-south-1.amazonaws.com/sample-repo'
         // AWS_CREDENTIALS = credentials('aws_provider') // Use the ID you set in Jenkins credentials
-        // IMAGE_TAG = "datayaan_container_registry"
+        // IMAGE_TAG = "sample-repo"
     }
 
     stages {
+        stage('Check AWS CLI Version') {
+    steps {
+        script {
+            sh 'aws --version'
+        }
+    }
+
+
         stage('Checkout') {
             steps {
-                git branch: 'master', credentialsId: 'aws_codecommit_credentials', url: CODECOMMIT_REPO_URL
+                git branch: 'master', credentialsId: 'aws_codecommit_cre', url: CODECOMMIT_REPO_URL
             }
         }
 
@@ -98,10 +108,11 @@ pipeline {
         stage('Run New Container') {
             steps {
                 script {
-                    sh "docker run -d -p 8000:80 482088842115.dkr.ecr.ap-south-1.amazonaws.com/datayaan_container_registry:datayaan_container_registry"
+                    sh "docker run -d -p 8000:80 482088842115.dkr.ecr.ap-south-1.amazonaws.com/sample-repo:sample-repo"
                 }
             }
         }
 
     }
+}
 }

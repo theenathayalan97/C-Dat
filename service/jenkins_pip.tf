@@ -9,12 +9,12 @@
           }
           
           provider "jenkins" {
-            server_url = "http://3.108.41.34:8080/"  # Specify the correct Jenkins server URL
+            server_url = "http://3.109.181.119:8080/"  # Specify the correct Jenkins server URL
             username   = "root"
             password   = "root"
           }
           
           resource "jenkins_job" "dys_jenkins" {
-            name     = "dys_jenkins-1"
+            name     = "dys_jenkins"
             template = file("job.xml")
           }

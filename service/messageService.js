@@ -2,7 +2,7 @@ const fs = require('fs');
 const { exec } = require('child_process');
 const path = require('../path');
 const simpleGit = require('simple-git');
-const respounce = require('../responce/responce')
+const respounce = require('../response/response')
 
 async function createSnsTopic(req, res, message) {
   try {
