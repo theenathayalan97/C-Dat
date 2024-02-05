@@ -4,41 +4,71 @@ const path = require('../path');
 const respounce = require('../response/response')
 require('dotenv').config()
 
-const access_key = process.env.access_key
-const secret_key = process.env.secret_key
+const jwt = require('jsonwebtoken');
+
+// const access_key = process.env.access_key
+// const secret_key = process.env.secret_key
+
+//database
+let database = require('../Connections/postgres')
+let user = database.users
+
+async function signUp(req, res, message) {
+  try {
+    // console.log(1);
+    let register = {}
+    let name = req.body.user_name
+    let password = req.body.password
+    let email = req.body.email
+    let phonenumber = req.body.phonenumber
+
+    register.name = name
+    register.password = password
+    register.email = email
+    register.phonenumber = phonenumber
+
+    let userRegister = await user.create(register)
+    return res.status(201).json({ message: "user register successfully" })
+
+  } catch (error) {
+    return res.status(400).json({ message: " something went wrong ", result: error.message })
+  }
+}
 
 async function userLogin(req, res, message) {
   try {
+    let jwtSecretKey = process.env.JWT_SECRET_KEY;
+    let phonenumber = req.body.phonenumber
+    if(!phonenumber){
+      return res.status(400).json({ message: "phone number required"})
+    }
+    let password = req.body.password
+    if(!password){
+      return res.status(400).json({ message: "password required"})
+    }
     // console.log(1);
-    if (`${req.body.username}` === "demo" && `${req.body.password}` === "demo@123") {
-      const tfConfig = `
-                  provider "aws" {
-                    access_key = "${access_key}"
-                    secret_key = "${secret_key}"
-                      region     = "ap-south-1"
-                    }`;
-
-      // Write the Terraform configuration to a file
-      fs.writeFileSync(`${path.directory}/main.tf`, tfConfig);
-      const configPath = `${path.directory}`;
-      process.chdir(configPath);
-
-      exec('terraform apply -auto-approve', (applyError, applyStdout, applyStderr) => {
-        if (applyError) {
-          console.error('Terraform login failed:', applyStderr);
-          res.status(400).send("Terraform login failed");
-        } else {
-          console.log('Terraform login succeeded.');
-          respounce.createMessage(req, res, message)
+    let data = await user.findOne({
+      where: { phonenumber: phonenumber }
+    })
+    if(!data){
+      return res.status(404).json({ message: "user not found"})
+    }
+    if (data.phonenumber == phonenumber) {
+      if (data.password == password) {
+        let user = {
+          uuid: data.uuid,
+          role: data.role,
+          organization_id: data.organization_id
         }
-      });
+        const token = jwt.sign(user, jwtSecretKey);
+        return res.status(201).json({ message: "log in successfully", result: token })
+      } else {
+        return res.status(400).json({ message: "user phone number and password incorrect" })
+      }
+    } else {
+      return res.status(400).json({ message: "user phone number and password incorrect" })
     }
-    //  Run Terraform commands
 
-    // }
-    else {
-      res.status(404).send("Invalid user name and password")
-    }
   } catch (error) {
     return res.status(400).json({ message: " something went wrong ", result: error.message })
   }
@@ -79,4 +109,4 @@ async function s3_bucket_creation(req, res, message) {
   }
 }
 
-module.exports = { userLogin, s3_bucket_creation };
+module.exports = { signUp, userLogin, s3_bucket_creation };

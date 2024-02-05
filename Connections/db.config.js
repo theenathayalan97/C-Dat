@@ -1,7 +1,7 @@
 const env= process.env
 module.exports={
     HOST:env.HOST,
-    USER:env.USER,
+    USER:env.NAME,
     PASSWORD:env.PASSWORD,
     DB:env.DATABASE,
     dialect:'postgres',

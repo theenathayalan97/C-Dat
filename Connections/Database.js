@@ -4,5 +4,6 @@ db.database.sync()
     console.log("Synced db.");
   })
   .catch((err) => {
-    console.log("Failed to sync db: " + err.message);
+    console.log("12345678");
+    console.log("Failed to sync db: " + err);
   });

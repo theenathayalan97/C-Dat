@@ -14,8 +14,8 @@ async function createDockerInstance(req, res, message) {
     // let public_ip = req.body.publicIp //boolearn
     console.log("security_group_id : ", security_group_id);
     const tfConfig = ` 
-    resource "aws_ecr_repository" "${repo}" {
-      name = "${repo}"
+    resource "aws_ecr_repository" "welcome_cantainer" {
+      name = "welcome_cantainer"
       force_delete = true
     }
      
@@ -50,16 +50,16 @@ async function createDockerInstance(req, res, message) {
                   cd /
                   cd datayaan_website2.0
                   cd datayaan_website2.0
-                  sudo docker build -t 482088842115.dkr.ecr.ap-south-1.amazonaws.com/${repo} .
+                  sudo docker build -t 482088842115.dkr.ecr.ap-south-1.amazonaws.com/welcome_cantainer .
                   sleep 60
-                  sudo docker push 482088842115.dkr.ecr.ap-south-1.amazonaws.com/${repo}:latest
+                  sudo docker push 482088842115.dkr.ecr.ap-south-1.amazonaws.com/welcome_cantainer:latest
                   
-                  sudo docker run -d -p 80:80 482088842115.dkr.ecr.ap-south-1.amazonaws.com/${repo}:latest
-                  sudo docker pull 482088842115.dkr.ecr.ap-south-1.amazonaws.com/${repo}:latest
+                  sudo docker run -d -p 80:80 482088842115.dkr.ecr.ap-south-1.amazonaws.com/welcome_cantainer:latest
+                  sudo docker pull 482088842115.dkr.ecr.ap-south-1.amazonaws.com/welcome_cantainer:latest
                   EOF
      
       tags = {
-        Name = "${repo}"
+        Name = "welcome_cantainer"
       }
      
       provisioner "remote-exec" {
@@ -112,7 +112,7 @@ resource "aws_ecs_task_definition" "app_task" {
   [
     {
       "name": "app-task",
-      "image": "482088842115.dkr.ecr.ap-south-1.amazonaws.com/${repo}",
+      "image": "482088842115.dkr.ecr.ap-south-1.amazonaws.com/welcome_cantainer",
       "essential": true,
       "portMappings": [
         {

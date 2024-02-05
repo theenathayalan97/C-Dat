@@ -14,8 +14,17 @@ const codePipelineService = require('../service/codePipelineService')
 // const architecture_func = require('../resource')
 
 // message 
-let message = require('../response/message')
+let message = require('../response/message') //signUp
 
+
+async function userSignUp(req, res ) {
+  try {
+    await userService.signUp(req, res)
+  }
+  catch (error) {
+    return res.status(400).json({ message: " something went wrong ", result: error.message })
+  }
+}
 
 //AWS LOGIN
 async function aws_login(req, res ) {
@@ -264,10 +273,10 @@ async function key_pair(req, res){
 }
 
 module.exports = {
-  aws_login, security_group_list, subnet_list, os_list, vpc_list, s3_bucket, accountDestroy,
+  userSignUp,aws_login, security_group_list, subnet_list, os_list, vpc_list, s3_bucket, accountDestroy,
   serviceDestroy, create_queue, create_sns_topic, code_pull, push_code, architecture, rosa,
-  load_balancer, send_email, createDockerInstance, createContainerDeploy, internet_gate_way_list, jenkinsPipeline,
-  appRunner, ebs, code_pipeline, architectureSecurity_group_list,key_pair
+  load_balancer, send_email, createDockerInstance, createContainerDeploy, internet_gate_way_list, 
+  jenkinsPipeline, appRunner, ebs, code_pipeline, architectureSecurity_group_list,key_pair
   
   // jenkin,
 };

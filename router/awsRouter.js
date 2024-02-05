@@ -3,6 +3,7 @@ const middleware= require('../middleware/auth')
 const router=require("express").Router();
 
 // finish router
+router.post("/signup", middleware.authorization, middleware.authentication(['admin'],true), awsController.userSignUp);
 router.post("/login", middleware.authorization, middleware.authentication(['admin'],true), awsController.aws_login);
 router.post("/s3_bucket", middleware.authorization, middleware.authentication(['admin'],true),awsController.s3_bucket)
 router.get("/vpclist", middleware.authorization, middleware.authentication(['admin'],true),awsController.vpc_list);
@@ -24,12 +25,10 @@ router.post("/container_deploy", middleware.authorization, middleware.authentica
 router.post("/cloud_app_runner", middleware.authorization, middleware.authentication(['admin'],true),awsController.appRunner) //App runner
 router.post("/jenkins_pipeline", middleware.authorization, middleware.authentication(['admin'],true),awsController.jenkinsPipeline) //Jenkins
 router.post("/ebs", middleware.authorization, middleware.authentication(['admin'],true),awsController.ebs) //EBS
+router.post("/code_pipeline", middleware.authorization, middleware.authentication(['admin'],true),awsController.code_pipeline)
 
 //process
 router.post("/architecture", middleware.authorization, middleware.authentication(['admin'],true),awsController.architecture)
-
-//deploy process
-router.post("/code_pipeline", middleware.authorization, middleware.authentication(['admin'],true),awsController.code_pipeline)
 
 //Not using below router
 router.post("/rosa", middleware.authorization, middleware.authentication(['admin'],true),awsController.rosa)

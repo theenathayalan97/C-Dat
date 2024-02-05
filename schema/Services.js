@@ -1,5 +1,5 @@
 module.exports = (database, Sequelize) => {
-    const User = database.define('services', {
+    const services = database.define('services', {
         uuid: {
             type: Sequelize.UUID,
             primaryKey: true,
@@ -17,19 +17,24 @@ module.exports = (database, Sequelize) => {
             type:Sequelize.STRING,
             allowNull:true
         },
-        token:{
-            type:Sequelize.JSON,
+        user_id:{
+            type:Sequelize.STRING,
             allowNull:true
         },
         is_deleted:{
             type:Sequelize.BOOLEAN,
-            allowNull:false,
+            allowNull:true,
             defaultValue:false
+        },
+        is_active:{
+            type:Sequelize.BOOLEAN,
+            allowNull:true,
+            defaultValue:true
         }
     },
         {
             timeStamps: true
         })
-    return User
+    return services
 
 }

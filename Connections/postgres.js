@@ -9,6 +9,9 @@ const db={}
 db.Sequelize= Sequelize
 db.database= database
 
+db.users= require('../schema/user')(database,Sequelize)
+db.organizations= require('../schema/organization')(database,Sequelize)
 db.Services= require('../schema/Services')(database,Sequelize)
+
 
 module.exports=db
