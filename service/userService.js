@@ -275,8 +275,17 @@ async function s3_bucket_creation(req, res, message) {
 
 async function forgetPasswordOtpSend(req, res) {
   try {
-    let countryCode = req.body.countryCode
-    let phonenumber = req.body.phonenumber
+    let forgetPassword ={
+      email : req.params.email,
+      uuid : req.id
+    } 
+ 
+    let data = await user.findOne({
+      where: forgetPassword
+    })
+    if(!data){
+      return res.status(404).json({ message: "email not found"})
+    }
 
     otp = otpGenerator.generate(4, { 
       lowerCaseAlphabets: false, upperCaseAlphabets: false, specialChars: false 
@@ -287,7 +296,30 @@ async function forgetPasswordOtpSend(req, res) {
 
     }, 30000)
     console.log(" generate : ", otp);
- 
+    const transporter = nodemailer.createTransport({
+      port: 465,               // true for 465, false for other ports
+      host: "smtp.gmail.com",
+      auth: {
+          user: process.env.step-email,
+          pass: process.env.step-pass,
+      },
+      secure: true,
+  });
+
+  const mailData = {
+      from: process.env.step-email ,  // sender address
+      to: data.email,   // list of receivers
+      subject: 'change the password',
+      text: 'That was easy!',
+      html: `<b>forget password </b><br> OTP - ${otp}<br/>`,
+  };
+
+  transporter.sendMail(mailData, function (err, info) {
+      if (err)
+          console.log(err)
+      else
+      return res.status(200).json({ message: "OTP mail send successfully", message_id: info})
+  });
   } catch (error) {
     return res.status(400).json({ message: "something went wrong", result: error.message })
   }
