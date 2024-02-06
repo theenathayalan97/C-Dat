@@ -34,12 +34,12 @@ async function architectureCreate(req, res, message, value) {
 
 async function sendMessage(req, res, value) {
     try {
-    const snsClient = new SNSClient();
-    const params = {
-        Message: `${JSON.stringify(value)}`,
-        Subject: 'C-Dat application',
-        TopicArn: 'arn:aws:sns:ap-south-1:482088842115:sample-topic'
-    };
+        const snsClient = new SNSClient();
+        const params = {
+            Message: `${JSON.stringify(value)}`,
+            Subject: 'C-Dat application',
+            TopicArn: 'arn:aws:sns:ap-south-1:482088842115:sample-topic'
+        };
 
         const command = new PublishCommand(params);
         const data = await snsClient.send(command);

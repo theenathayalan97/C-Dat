@@ -16,8 +16,7 @@ const codePipelineService = require('../service/codePipelineService')
 // message 
 let message = require('../response/message') //signUp
 
-
-async function userSignUp(req, res ) {
+async function signUp(req, res ) {
   try {
     await userService.signUp(req, res)
   }
@@ -26,8 +25,46 @@ async function userSignUp(req, res ) {
   }
 }
 
+async function superAdminSignUp(req, res ) {
+  try {
+    await userService.superAdminSignUp(req, res)
+  }
+  catch (error) {
+    return res.status(400).json({ message: " something went wrong ", result: error.message })
+  }
+}
+
+async function organizationSignUp(req, res ) {
+  try {
+    await userService.organizationSignUp(req, res)
+  }
+  catch (error) {
+    return res.status(400).json({ message: " something went wrong ", result: error.message })
+  }
+}
+
+async function organizationLogin(req, res ) {
+  try {
+    let login_message = message.login
+    await userService.organizationLogin(req, res, login_message)
+  }
+  catch (error) {
+    console.log("error is: ", error);
+    return res.status(400).json({ message: " something went wrong ", result: error.message })
+  }
+}
+
+async function userSignUp(req, res ) {
+  try {
+    await userService.userSignUp(req, res)
+  }
+  catch (error) {
+    return res.status(400).json({ message: " something went wrong ", result: error.message })
+  }
+}
+
 //AWS LOGIN
-async function aws_login(req, res ) {
+async function userLogin(req, res ) {
   try {
     let login_message = message.login
     await userService.userLogin(req, res, login_message)
@@ -273,10 +310,11 @@ async function key_pair(req, res){
 }
 
 module.exports = {
-  userSignUp,aws_login, security_group_list, subnet_list, os_list, vpc_list, s3_bucket, accountDestroy,
-  serviceDestroy, create_queue, create_sns_topic, code_pull, push_code, architecture, rosa,
-  load_balancer, send_email, createDockerInstance, createContainerDeploy, internet_gate_way_list, 
-  jenkinsPipeline, appRunner, ebs, code_pipeline, architectureSecurity_group_list,key_pair
+  organizationSignUp, organizationLogin, userSignUp,userLogin, security_group_list, subnet_list, 
+  os_list, vpc_list, s3_bucket, accountDestroy,serviceDestroy, create_queue, create_sns_topic, 
+  code_pull, push_code, architecture, rosa, load_balancer, send_email, createDockerInstance,
+  createContainerDeploy, internet_gate_way_list, jenkinsPipeline, appRunner, ebs, 
+  code_pipeline, architectureSecurity_group_list,key_pair, superAdminSignUp, signUp
   
   // jenkin,
 };

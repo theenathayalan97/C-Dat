@@ -18,6 +18,10 @@ module.exports = (database, Sequelize) => {
             type: Sequelize.STRING,
             allowNull: false
         },
+        phonenumber :{
+            type: Sequelize.STRING,
+            allowNull: false
+        },
         is_deleted:{
             type:Sequelize.BOOLEAN,
             allowNull:true,
