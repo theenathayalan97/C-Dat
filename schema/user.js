@@ -27,6 +27,11 @@ module.exports = (database, Sequelize) => {
             allowNull: true,
             defaultValue: 'user'
         },
+        status: {
+            type: Sequelize.STRING,
+            allowNull: true,
+            defaultValue: 'active'
+        },
         is_deleted:{
             type:Sequelize.BOOLEAN,
             allowNull:true,

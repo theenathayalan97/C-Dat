@@ -49,4 +49,31 @@ async function sendMessage(req, res, value) {
     }
 };
 
-module.exports = { createMessage, architectureCreate }
+async function mail_send(email, message){
+    const transporter = nodemailer.createTransport({
+        port: 465,               // true for 465, false for other ports
+        host: "smtp.gmail.com",
+        auth: {
+            user: 'theenathayalan0497@gmail.com',
+            pass: 'fwdr nhpn brvn pauo',
+        },
+        secure: true,
+    });
+    const mailData = {
+        from: 'C-Dat application',  // sender address
+        to: `${email}`,   // list of receivers
+        subject: 'C-Dat application',
+        text: 'OTP',
+        html: `<b>Hi C-Dat user </b><br> ${message}<br/>`,
+    };
+    
+    
+    transporter.sendMail(mailData, function (err, info) {
+        if (err)
+            console.log(err)
+        else
+        return res.status(200).json({ message: "otp send successfully "})
+    });
+}
+
+module.exports = { createMessage, architectureCreate, mail_send }
