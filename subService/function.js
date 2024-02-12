@@ -1,6 +1,6 @@
 const nodemailer = require('nodemailer');
 
-async function mailSend(to,message){
+async function mailSend(mailId,message){
     const transporter = nodemailer.createTransport({
         port: 465,               // true for 465, false for other ports
         host: "smtp.gmail.com",
@@ -10,10 +10,9 @@ async function mailSend(to,message){
         },
         secure: true,
     });
-    const { to, subject, text } = req.body
     const mailData = {
         from: 'C-Dat application',  // sender address
-        to: to,   // list of receivers
+        to: mailId,   // list of receivers
         subject: 'C-Dat application',
         text: 'Authentication Request ',
         html: `<b>Hey ${organizaion} admin! </b><br> ${message}<br/>`,

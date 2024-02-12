@@ -13,11 +13,40 @@ app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 
 
-const aws_router = require("./router/awsRouter")
+const aws_router = require("./router/aws_router")
 app.use("/api/v1",aws_router)
 
 const azure_router = require("./router/azureRouter")
 app.use("/api/v1",azure_router)
+
+
+const swaggerUi = require('swagger-ui-express');
+const swaggerJsDoc = require('swagger-jsdoc');
+
+const swaggerOptions = {
+    definition: {
+      openapi: '3.0.0',
+      info: {
+        title: 'My API',
+        version: '1.0.0',
+        description: 'A sample API for learning Swagger',
+      },
+      servers: [
+        {
+          url: 'http://localhost:8000/api/v1',
+        },
+      ],
+    },
+    apis: [`./router/aws_router.js`],
+  };
+
+  const swaggerDocs = swaggerJsDoc(swaggerOptions);
+// app.use('/api-doc', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
+app.use(
+    "/api/v1",
+    swaggerUi.serve,
+    swaggerUi.setup(swaggerDocs, { explorer: true })
+  );
 
 
 const port = 8000

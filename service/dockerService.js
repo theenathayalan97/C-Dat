@@ -13,6 +13,7 @@ async function createDockerInstance(req, res, message) {
     let security_group_id = req.body.securityGroupId //["sg-0c1894e242d5ce805"]
     // let public_ip = req.body.publicIp //boolearn
     console.log("security_group_id : ", security_group_id);
+    //  https://github.com/theenathayalan97/datayaan_website2.0
     const tfConfig = ` 
     resource "aws_ecr_repository" "welcome_cantainer" {
       name = "welcome_cantainer"
@@ -37,15 +38,15 @@ async function createDockerInstance(req, res, message) {
                   sudo /tmp/restart_docker.sh
                   newgrp docker  # Switch to the "docker" group
                   sleep 10  # Wait for Docker to initialize
-                  sudo aws configure set aws_access_key_id AKIAXAPV36OBY2Z74DVZ
-                  sudo aws configure set aws_secret_access_key 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
+                  sudo aws configure set aws_access_key_id AKIAXAPV36OBRTMWGSHX
+                  sudo aws configure set aws_secret_access_key 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
                   sudo aws configure set default.region ap-south-1
                   sudo aws configure set default.output json
                   aws ecr get-login-password --region ap-south-1 | sudo docker login --username AWS --password-stdin 482088842115.dkr.ecr.ap-south-1.amazonaws.com
                   sudo apt install python3-pip -y
                   sudo pip install git-remote-codecommit -q
                   sleep 10
-                  git clone codecommit::ap-south-1://datayaan_website2.0
+                  git clone https://github.com/theenathayalan97/datayaan_website2.0
                   sleep 30
                   cd /
                   cd datayaan_website2.0
@@ -86,6 +87,38 @@ async function createDockerInstance(req, res, message) {
     // Run Terraform commands
     exec('terraform apply -auto-approve', (applyError, applyStdout, applyStderr) => {
       if (applyError) {
+        console.log("logs 1");
+        if(applyStderr.includes('terraform init')){
+          console.log("logs 2");
+          exec('terraform init ', (error, initStdout, initStderr) => {
+            if (error) {
+                console.error('Terraform login initialization failed:', initStderr);
+                res.status(400).send("Terraform login initialization failed");
+            } else {
+                // console.log(3);
+                console.log('Terraform login initialization succeeded.');
+                exec('terraform apply -auto-approve', (applyError, applyStdout, applyStderr) => {
+                    if (applyError) {
+                        console.error('Terraform login failed:', applyStderr);
+                        if(applyStderr.includes('already exists')){
+                          return res.status(400).send("Tag name already exists");
+                        }
+                        res.status(400).send("Terraform login failed");
+                    } else {
+                        console.log('docker instance create successfully.');
+                        respounce.createMessage(req, res, message)
+                    }
+                });
+            }
+        })
+        }
+
+        if(applyStderr.includes('terraform init -update')){
+          console.log("logs 3");
+          exec('terraform init -update',()=>{
+            createDockerInstance(req, res, message)
+          })
+        }
         console.log('docker creation failed:', applyStderr);
         return res.status(400).json({ message: "docker creation failed" });
       } else {
@@ -239,6 +272,20 @@ output "app_url" {
     // Run Terraform commands
     exec('terraform apply -auto-approve', (applyError, applyStdout, applyStderr) => {
       if (applyError) {
+        console.log("logs 1");
+        if(applyStderr.includes('terraform init')){
+          console.log("logs 2");
+          exec('terraform init',()=>{
+            containerDeploy(req, res, message)
+          })
+        }
+
+        if(applyStderr.includes('terraform init -update')){
+          console.log("logs 3");
+          exec('terraform init -update',()=>{
+            containerDeploy(req, res, message)
+          })
+        }
         console.log('docker creation failed:', applyStderr);
         return res.status(400).json({ message: "docker creation failed" });
       } else {
