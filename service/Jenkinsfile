@@ -32,87 +32,87 @@ pipeline {
 
     stages {
         stage('Check AWS CLI Version') {
-    steps {
-        script {
-            sh 'aws --version'
-        }
-    }
-
-
-        stage('Checkout') {
-            steps {
-                git branch: 'master', credentialsId: 'aws_codecommit_cre', url: CODECOMMIT_REPO_URL
-            }
-        }
-
-        stage('Logging into AWS ECR') {
             steps {
                 script {
-                    sh "aws ecr get-login-password --region ${AWS_DEFAULT_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com"
+                    sh 'aws --version'
                 }
             }
-        }
 
-        stage('Build Docker Image') {
-            steps {
-                script {
-                    // Build Docker image
-                    def dockerImage = docker.build("${YOUR_CONTAINER}:${IMAGE_TAG}")
-                    dockerImage.push()
+
+            stage('Checkout') {
+                steps {
+                    git branch: 'master', credentialsId: 'aws_codecommit_cre', url: CODECOMMIT_REPO_URL
                 }
             }
-        }
 
-        stage('Pushing to ECR') {
-            steps {
-                script {
-                    echo('Pushing the image')
-                    sh "docker tag ${YOUR_CONTAINER}:${IMAGE_TAG} ${YOUR_CONTAINER}:${IMAGE_TAG}"
-                    sh "docker push ${YOUR_CONTAINER}:${IMAGE_TAG}"
-                    echo('Image pushed to the repository successfully')
-                }
-            }
-        }
-
-        stage('Deploying to Docker') {
-            steps {
-                script {
-                    // Pull the image from ECR
-                    sh "aws ecr get-login-password --region ${AWS_DEFAULT_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com"
-                    sh "docker pull ${YOUR_CONTAINER}:${IMAGE_TAG}"
-                    echo('docker image pulled')
-                }
-            }
-        }
-
-        stage('Check and Stop Container') {
-            steps {
-                script {
-                    echo('check & stop stage')
-                    def portToStop = 80
-                    def containerIds = sh(script: "docker ps -q --filter=expose=${portToStop}", returnStdout: true).trim()
-                    if (containerIds) {
-                        // Split the container IDs and stop each container
-                        containerIds.split("\n").each { containerId ->
-                            sh "docker stop ${containerId}"
-                            sh "docker rm ${containerId}"
-                            echo "Stopped and removed container ID: ${containerId}"
-                        }
-                    } else {
-                        echo "No containers found using port ${portToStop}"
+            stage('Logging into AWS ECR') {
+                steps {
+                    script {
+                        sh "aws ecr get-login-password --region ${AWS_DEFAULT_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com"
                     }
                 }
             }
-        }
-        
-        stage('Run New Container') {
-            steps {
-                script {
-                    sh "docker run -d -p 8000:80 482088842115.dkr.ecr.ap-south-1.amazonaws.com/sample-repo:sample-repo"
+
+            stage('Build Docker Image') {
+                steps {
+                    script {
+                        // Build Docker image
+                        def dockerImage = docker.build("${YOUR_CONTAINER}:${IMAGE_TAG}")
+                        dockerImage.push()
+                    }
                 }
             }
-        }
 
+            stage('Pushing to ECR') {
+                steps {
+                    script {
+                        echo('Pushing the image')
+                        sh "docker tag ${YOUR_CONTAINER}:${IMAGE_TAG} ${YOUR_CONTAINER}:${IMAGE_TAG}"
+                        sh "docker push ${YOUR_CONTAINER}:${IMAGE_TAG}"
+                        echo('Image pushed to the repository successfully')
+                    }
+                }
+            }
+
+            stage('Deploying to Docker') {
+                steps {
+                    script {
+                        // Pull the image from ECR
+                        sh "aws ecr get-login-password --region ${AWS_DEFAULT_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com"
+                        sh "docker pull ${YOUR_CONTAINER}:${IMAGE_TAG}"
+                        echo('docker image pulled')
+                    }
+                }
+            }
+
+            stage('Check and Stop Container') {
+                steps {
+                    script {
+                        echo('check & stop stage')
+                        def portToStop = 80
+                        def containerIds = sh(script: "docker ps -q --filter=expose=${portToStop}", returnStdout: true).trim()
+                        if (containerIds) {
+                            // Split the container IDs and stop each container
+                            containerIds.split("\n").each { containerId ->
+                                sh "docker stop ${containerId}"
+                                sh "docker rm ${containerId}"
+                                echo "Stopped and removed container ID: ${containerId}"
+                            }
+                        } else {
+                            echo "No containers found using port ${portToStop}"
+                        }
+                    }
+                }
+            }
+            
+            stage('Run New Container') {
+                steps {
+                    script {
+                        sh "docker run -d -p 8000:80 482088842115.dkr.ecr.ap-south-1.amazonaws.com/sample-repo:sample-repo"
+                    }
+                }
+            }
+
+        }
     }
-}
 }

@@ -9,8 +9,8 @@ const client = require('twilio')(process.env.accountSid, process.env.authToken)
 
 const mailMessage = require('../subService/function')
 
-// const access_key = process.env.access_key
-// const secret_key = process.env.secret_key
+const access_key = process.env.access_key
+const secret_key = process.env.secret_key
 
 //database
 let database = require('../Connections/postgres')

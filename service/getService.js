@@ -9,7 +9,14 @@ const respounce = require('../response/response')
 
 async function vpcListGet(req, res, message) {
     try {
-        const tfConfig = `data "aws_vpcs" "foo" {
+        const tfConfig = `
+        provider "aws" {
+            access_key = "AKIA2TVEYKFL56KFKSKM"
+            secret_key = "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"
+            region = "ap-south-1"
+          }
+        
+        data "aws_vpcs" "foo" {
         }
         output "foo" {
           value = data.aws_vpcs.foo.ids
@@ -33,7 +40,11 @@ async function vpcListGet(req, res, message) {
                         console.log('Terraform get vpc list succeeded.');
                         const vpcIdRegex = /"vpc-\w+"/g;
                         const matchArray = applyStdout.match(vpcIdRegex);
-                        const vpcIds = matchArray.map(match => match.replace(/"/g, ''));
+                        console.log("matchArray : ",matchArray);
+                        if(!matchArray){
+                            respounce.createMessage(req, res, `${message}.but Data is empty`)
+                        }else{
+                            const vpcIds = matchArray.map(match => match.replace(/"/g, ''));
                         function findDuplicates(array) {
                             let duplicateIds = [...new Set(array)]
 
@@ -45,6 +56,8 @@ async function vpcListGet(req, res, message) {
                         }else{
                             respounce.createMessage(req, res, message, vpcIds)
                         }
+                        }
+                        
                     }
                 });
             }
