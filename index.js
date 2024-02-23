@@ -59,3 +59,25 @@ app.listen(port,()=>{
 })
 
 
+// let str = "Yertertee";
+
+// let result = 'erter'
+// let count = 0
+
+// for(let i=0; i<str.length; i++){
+//     let data = i
+//     for(let j=0; j<result.length; j++){
+//         if(str[i] == result[j]){
+//             i++
+//            if(j == (result.length -1) ){
+//                count++
+//            } 
+//         }else{
+//             i = data
+//         }
+//     }
+// }
+
+// console.log("count ", count)
+
+
