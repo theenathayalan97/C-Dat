@@ -13,8 +13,7 @@ async function createDockerInstance(req, res, message) {
     let security_group_id = req.body.securityGroupId //["sg-0c1894e242d5ce805"]
     // let public_ip = req.body.publicIp //boolearn
     console.log("security_group_id : ", security_group_id);
-    //  https://github.com/theenathayalan97/datayaan_website2.0
-    const tfConfig = ` 
+        const tfConfig = ` 
     resource "aws_ecr_repository" "welcome_cantainer" {
       name = "welcome_cantainer"
       force_delete = true

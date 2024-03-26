@@ -139,27 +139,6 @@ sh 'chmod 600 $EC2_PEM_FILE'
                 
                 // Run the Docker container on the remote server
                 sh "ssh -i $EC2_PEM_FILE -o StrictHostKeyChecking=no ubuntu@ec2-65-2-181-61.ap-south-1.compute.amazonaws.com 'docker run -d -p 5000:3000 ${YOUR_CONTAINER_FRONTEND}:${IMAGE_TAG_front}'"
-
-                
-                // Set correct permissions for the PEM file
-               // Set correct permissions for the PEM file
-                // sh "ssh -i 'my-key-pair' ubuntu@ec2-65-2-181-61.ap-south-1.compute.amazonaws.com 'chmod 400 $EC2_PEM_FILE'"
-                
-                // // Log in to AWS ECR on the remote server
-                // sh "ssh -i 'my-key-pair' ubuntu@ec2-65-2-181-61.ap-south-1.compute.amazonaws.com 'aws ecr get-login-password --region ${AWS_DEFAULT_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com'"
-                
-                // // Pull the Docker image on the remote server
-                // sh "ssh -i 'my-key-pair' ubuntu@ec2-65-2-181-61.ap-south-1.compute.amazonaws.com 'docker pull ${YOUR_CONTAINER_FRONTEND}:${IMAGE_TAG_front}'"
-                
-                // // Run the Docker container on the remote server
-                // sh "ssh -i 'my-key-pair' ubuntu@ec2-65-2-181-61.ap-south-1.compute.amazonaws.com 'docker run -d -p 5000:3000 ${YOUR_CONTAINER_FRONTEND}:${IMAGE_TAG_front}'"
-
-                // SSH into the EC2 instance
-                // sh "ssh -o StrictHostKeyChecking=no -i $EC2_PEM_FILE ubuntu@ec2-65-2-181-61.ap-south-1.compute.amazonaws.com << 
-                //     # Execute Docker commands on the remote server
-                //     aws ecr get-login-password --region ${AWS_DEFAULT_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com
-                //     docker pull your-ecr-url/your-docker-image-name:latest
-                //     docker run -d -p 80:80 your-ecr-url/your-docker-image-name:latest '''
                 
             }
         }

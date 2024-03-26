@@ -406,3 +406,12 @@ module.exports = {
   userLogin, s3_bucket_creation, getService, forgetPasswordOtpSend, changePassword, 
   passwordOtpVerify, getOrganization, getUser
 };
+
+
+
+
+
+
+
+
+

@@ -139,3 +139,128 @@ pipeline {
     }
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//         stage('Build Docker Image') {
+//             steps {
+//             //     script {
+//             //     withCredentials([sshUserPrivateKey(credentialsId: 'jenkins', keyFileVariable: 'EC2_PEM_FILE')]) {
+//             //                 // withAWS(credentials: 'aws_codecommit_credentials', region: AWS_DEFAULT_REGION) {
+//             //                     sh """
+//             //                         chmod 400 $EC2_PEM_FILE
+//             //                         ssh -i $EC2_PEM_FILE -o StrictHostKeyChecking=no ubuntu@${DEPLOYED_SERVER} 'export AWS_ACCESS_KEY_ID=${AWS_CREDENTIALS_USR}; export AWS_SECRET_ACCESS_KEY=${AWS_CREDENTIALS_PSW};' "aws ecr get-login-password --region ${AWS_DEFAULT_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com"
+//             //                         ssh -i $EC2_PEM_FILE -o StrictHostKeyChecking=no ubuntu@${DEPLOYED_SERVER} "docker build -t ${CONTAINER_NAME} ."
+//             //                     """
+//             //     }
+//             // }
+//                 script {
+//                     echo('Building the Docker image : $CONTAINER_NAME')
+//             def dockerImage = 'docker build -t ${CONTAINER_NAME} .'
+//             echo('Docker image built')
+//                 }
+//             }
+//         }
+// }
+//         stage('Tag Docker Image for AWS ECR') {
+//     steps {
+//         script {
+//             // Escape dollar sign to prevent Groovy string interpolation
+//             // def escapedEc2PemFile = sh(script: 'echo \$EC2_PEM_FILE', returnStdout: true).trim()
+            
+//             // Login to the server and execute docker tag command
+//             withCredentials([sshUserPrivateKey(credentialsId: 'jenkins', keyFileVariable: 'EC2_PEM_FILE')]) {
+//                 sh """
+//                     chmod 400 $EC2_PEM_FILE
+//                     ssh -i $EC2_PEM_FILE -o StrictHostKeyChecking=no ubuntu@${DEPLOYED_SERVER} "docker tag ${CONTAINER_NAME}:${IMAGE_TAG} ${AWS_ACCOUNT_ID}.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${CONTAINER_NAME}:${IMAGE_TAG} "
+//                 """
+//             }
+//         }
+//     }
+// }
+
+
+//         stage('Tag Docker Image for AWS ECR') {
+//             steps {
+                
+//                  script {
+//                 withCredentials([sshUserPrivateKey(credentialsId: 'jenkins', keyFileVariable: 'EC2_PEM_FILE')]) {
+//                             // withAWS(credentials: 'aws_codecommit_credentials', region: AWS_DEFAULT_REGION) {
+//                                 sh """
+//                                     chmod 400 $EC2_PEM_FILE
+//                                     ssh -i $EC2_PEM_FILE -o StrictHostKeyChecking=no ubuntu@${DEPLOYED_SERVER} docker tag "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${CONTAINER_NAME}:${IMAGE_TAG} "
+//                                 """
+//                 }
+//             }
+//                 // script {
+                   
+//                 //     // Tag the Docker image for AWS ECR
+//                 //     echo('Docker image connect ECR')
+//                 //     def awsECRImage = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${CONTAINER_NAME}:${IMAGE_TAG}"
+//                 //     docker.image("${CONTAINER_NAME}:${IMAGE_TAG}").tag(awsECRImage)
+//                 //     echo('Docker image tagged for AWS ECR')
+//                 //     docker.image("${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${CONTAINER_NAME}:${IMAGE_TAG}").push()
+
+//                 // }
+//             }
+//         }
+//         }
+         
+//         stage('Check and Stop Container') {
+//             steps {
+//                 script {
+//                     echo ('Checking and stopping containers on port ${HOST_PORT}')
+//                     withCredentials([sshUserPrivateKey(credentialsId: 'docker_push', keyFileVariable: 'EC2_PEM_FILE')]) {
+//                         def portToStop = "${HOST_PORT}"
+//                         def containerIds = sh(
+//                             script: "ssh -i $EC2_PEM_FILE -o StrictHostKeyChecking=no ubuntu@${DEPLOYED_SERVER} \"docker ps -q --filter=expose=${portToStop}\"",
+//                             returnStdout: true
+//                         ).trim()
+
+//                         if (containerIds) {
+//                             // Split the container IDs and stop each container
+//                             containerIds.split("\n").each { containerId ->
+//                                 sh "ssh -i $EC2_PEM_FILE -o StrictHostKeyChecking=no ubuntu@${DEPLOYED_SERVER} \"docker stop ${containerId}\""
+//                                 sh "ssh -i $EC2_PEM_FILE -o StrictHostKeyChecking=no ubuntu@${DEPLOYED_SERVER} \"docker rm ${containerId}\""
+//                                 echo "Stopped and removed container ID: ${containerId}"
+//                             }
+//                         } else {
+//                             echo "No containers found using port ${portToStop}"
+//                         }
+//                     }
+//                 }
+//             }
+
+//         }
+//         stage('Deploy or container run') {
+//             steps {
+//                 script {
+//                     withCredentials([sshUserPrivateKey(credentialsId: 'jenkins', keyFileVariable: 'EC2_PEM_FILE')]) {
+//                         sh """
+//                             chmod 400 $EC2_PEM_FILE
+//                             ssh -i $EC2_PEM_FILE -o StrictHostKeyChecking=no ubuntu@${DEPLOYED_SERVER} 'export AWS_ACCESS_KEY_ID=${AWS_CREDENTIALS_USR}; export AWS_SECRET_ACCESS_KEY=${AWS_CREDENTIALS_PSW};' "aws ecr get-login-password --region ${AWS_DEFAULT_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com"                                        
+//                             ssh -i $EC2_PEM_FILE -o StrictHostKeyChecking=no ubuntu@${DEPLOYED_SERVER} "docker pull ${CONTAINER_NAME}:${IMAGE_TAG}"
+//                             ssh -i $EC2_PEM_FILE -o StrictHostKeyChecking=no ubuntu@${DEPLOYED_SERVER} "docker run -d -p ${RUN_PORT}:${HOST_PORT} ${CONTAINER_NAME}:${IMAGE_TAG}"
+//                         """
+//                     }
+//                 }
+//             }
+//         } 
