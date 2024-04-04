@@ -3,7 +3,7 @@ module.exports={
     HOST:env.HOST,
     USER:env.NAME,
     PASSWORD:env.PASSWORD,
-    DB:env.DATABASE,
+    DB:env.DB,
     dialect:'postgres',
     pool: {
         max: 5,

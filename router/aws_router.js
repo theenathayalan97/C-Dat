@@ -89,7 +89,7 @@ router.post("/ebs", middleware.authorization, middleware.authentication(['superA
 router.post("/code_pipeline", middleware.authorization, middleware.authentication(['superAdmin','admin','user'],true),deploymentController.code_pipeline)
 
 //process
-router.post("/architecture", middleware.authorization, middleware.authentication(['superAdmin','admin'],true),architectureController.architecture)
+router.post("/architecture",architectureController.architecture)
 
 //Not using below router
 router.post("/rosa", middleware.authorization, middleware.authentication(['superAdmin','admin'],true),deploymentController.rosa)

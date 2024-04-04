@@ -5,7 +5,6 @@ const respounce = require('../response/response')
 require('dotenv').config()
 
 const jwt = require('jsonwebtoken');
-const client = require('twilio')(process.env.accountSid, process.env.authToken)
 
 const mailMessage = require('../subService/function')
 
