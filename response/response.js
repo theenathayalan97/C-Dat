@@ -38,7 +38,7 @@ async function sendMessage(req, res, value) {
         const params = {
             Message: `${JSON.stringify(value)}`,
             Subject: 'C-Dat application',
-            TopicArn: 'arn:aws:sns:ap-south-1:482088842115:sample-topic'
+            TopicArn: 'arn:aws:sns:ap-south-1:411571901235:C-Dat_application'
         };
 
         const command = new PublishCommand(params);

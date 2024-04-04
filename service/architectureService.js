@@ -74,7 +74,11 @@ async function architecture(req, res, message) {
           }else if (applyStderr.includes("not a valid IPv4 CIDR block")) {
             fs.unlinkSync(fileName)
             return res.status(400).send(`IPv4 CIDR block is not valid `);
+          }else if (applyStderr.includes("The maximum number")) {
+            fs.unlinkSync(fileName)
+            return res.status(400).send(`The maximum number is not achived  `);
           } else {
+            
             console.error("Terraform Architecture created failed:", applyStderr);
             fs.unlinkSync(fileName)
             return res.status(400).send("Terraform Architecture created failed");

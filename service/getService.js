@@ -3,17 +3,23 @@ const { exec } = require('child_process');
 const path = require('../path');
 const simpleGit = require('simple-git');
 const respounce = require('../response/response')
+const env = process.env
 
 
 // Get list of AWS services
 
 async function vpcListGet(req, res, message) {
     try {
+        let access_key = env.accesskey
+        let secret_key = env.secretkey
+        let region = env.region
+
+        // console.log("access_key : ",access_key)
         const tfConfig = `
         provider "aws" {
-            access_key = "AKIA2TVEYKFL56KFKSKM"
-            secret_key = "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"
-            region = "ap-south-1"
+            access_key = "${access_key}"
+            secret_key = "${secret_key}"
+            region = "${region}"
           }
         
         data "aws_vpcs" "foo" {
