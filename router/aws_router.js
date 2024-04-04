@@ -67,10 +67,10 @@ router.get("service_list",middleware.authorization, middleware.authentication(['
 
 //service
 router.post("/s3_bucket", middleware.authorization, middleware.authentication(['superAdmin','admin'],true),serviceController.s3_bucket)
-router.get("/vpclist", middleware.authorization, middleware.authentication(['superAdmin','admin'],true),getServiceController.vpc_list);
-router.get("/SG_list", middleware.authorization, middleware.authentication(['superAdmin','admin'],true),getServiceController.security_group_list)
-router.get("/subnet_list", middleware.authorization, middleware.authentication(['superAdmin','admin'],true),getServiceController.subnet_list)
-router.get("/os_list", middleware.authorization, middleware.authentication(['superAdmin','admin'],true),getServiceController.os_list)
+router.get("/vpclist",getServiceController.vpc_list);
+router.get("/SG_list",getServiceController.security_group_list)
+router.get("/subnet_list",getServiceController.subnet_list)
+router.get("/os_list",getServiceController.os_list)
 router.post("/queue_creation", middleware.authorization, middleware.authentication(['superAdmin','admin'],true), serviceController.create_queue)
 router.post("/sns_topic", middleware.authorization, middleware.authentication(['superAdmin','admin'],true), serviceController.create_sns_topic)
 router.get("/code_pull", middleware.authorization, middleware.authentication(['superAdmin','admin'],true), serviceController.code_pull)
