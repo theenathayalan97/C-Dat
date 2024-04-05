@@ -46,24 +46,24 @@ async function vpcListGet(req, res, message) {
                         console.log('Terraform get vpc list succeeded.');
                         const vpcIdRegex = /"vpc-\w+"/g;
                         const matchArray = applyStdout.match(vpcIdRegex);
-                        console.log("matchArray : ",matchArray);
-                        if(!matchArray){
+                        console.log("matchArray : ", matchArray);
+                        if (!matchArray) {
                             respounce.createMessage(req, res, `${message}.but Data is empty`)
-                        }else{
+                        } else {
                             const vpcIds = matchArray.map(match => match.replace(/"/g, ''));
-                        function findDuplicates(array) {
-                            let duplicateIds = [...new Set(array)]
+                            function findDuplicates(array) {
+                                let duplicateIds = [...new Set(array)]
 
-                            return duplicateIds;
+                                return duplicateIds;
+                            }
+                            let duplicateIds = findDuplicates(vpcIds);
+                            if (duplicateIds.length > 0) {
+                                respounce.createMessage(req, res, message, duplicateIds)
+                            } else {
+                                respounce.createMessage(req, res, message, vpcIds)
+                            }
                         }
-                        let duplicateIds = findDuplicates(vpcIds);
-                        if(duplicateIds.length > 0){
-                            respounce.createMessage(req, res, message, duplicateIds)
-                        }else{
-                            respounce.createMessage(req, res, message, vpcIds)
-                        }
-                        }
-                        
+
                     }
                 });
             }
@@ -101,9 +101,9 @@ async function securityGroupListGet(req, res, message) {
                     return duplicateIds;
                 }
                 let duplicateIds = findDuplicates(securityGroupIds);
-                if(duplicateIds.length > 0){
+                if (duplicateIds.length > 0) {
                     respounce.createMessage(req, res, message, duplicateIds)
-                }else{
+                } else {
                     respounce.createMessage(req, res, message, securityGroupIds)
                 }
                 // return securityGroupIds;
@@ -151,9 +151,9 @@ async function subnetGetList(req, res, message) {
                     return duplicateIds;
                 }
                 let duplicateIds = findDuplicates(subnetIds);
-                if(duplicateIds.length > 0){
+                if (duplicateIds.length > 0) {
                     respounce.createMessage(req, res, message, duplicateIds)
-                }else{
+                } else {
                     respounce.createMessage(req, res, message, subnetIds)
                 }
             }
@@ -218,9 +218,9 @@ async function instanceGetList(req, res, message) {
                     return duplicateIds;
                 }
                 let duplicateIds = findDuplicates(instanceIds);
-                if(duplicateIds.length > 0){
+                if (duplicateIds.length > 0) {
                     respounce.createMessage(req, res, message, duplicateIds)
-                }else{
+                } else {
                     respounce.createMessage(req, res, message, instanceIds)
                 }
             }
@@ -230,7 +230,7 @@ async function instanceGetList(req, res, message) {
     }
 }
 
-async function architectureSecurityGroup(req, res, message){
+async function architectureSecurityGroup(req, res, message) {
     try {
         let subnetId = req.body.ec2Instance.subnetId[0]
         let tfConfig = `
@@ -285,18 +285,79 @@ async function architectureSecurityGroup(req, res, message){
             }
         });
     } catch (error) {
-        return res.status(400).json({ message: "something went wrong ", result: error.message})
+        return res.status(400).json({ message: "something went wrong ", result: error.message })
     }
 }
 
 async function internetGateWayList(req, res, message) {
     try {
-        const tfConfig = `data "aws_instances" "ins" {
+        const tfConfig = `
+            data "aws_internet_gateway" "gw" {
+                filter {
+                    name   = "attachment.vpc-id"
+                    values = ["vpc-04c20f3451c486381"] 
+                }
+            }
+
+            output "gw" {
+            value = data.aws_internet_gateway.gw.id
         }
-        
-        output "ins" {
-          value = data.aws_instances.ins.ids
-        }`;
+        `;
+
+        // Write the Terraform configuration to a file
+        fs.writeFileSync(`${path.directory}/internetGateWay_list.tf`, tfConfig);
+
+
+        // Define the relative path to the Terraform configuration directory
+        const configPath = `${path.directory}`;
+
+        // Change the current working directory to the Terraform configuration directory
+        process.chdir(configPath);
+
+        exec('terraform apply -auto-approve', (applyError, applyStdout, applyStderr) => {
+            if (applyError) {
+                console.error('Terraform apply failed:', applyStderr);
+                res.send("Terraform apply failed");
+            } else {
+                const subnetIdRegex = /"igw-\w+"/g; // Update the regex to match internet gateway IDs
+                const matchArray = applyStdout.match(subnetIdRegex);
+
+                if (!matchArray) {
+                    console.error('No internet gateway IDs found.');
+                    // Handle this case according to your requirements, such as sending an appropriate response
+                } else {
+                    const instanceIds = matchArray.map(match => match.replace(/"/g, ''));
+                    function findDuplicates(array) {
+                        let duplicateIds = [...new Set(array)]
+
+                        return duplicateIds;
+                    }
+                    let duplicateIds = findDuplicates(instanceIds);
+                    if (duplicateIds.length > 0) {
+                        respounce.createMessage(req, res, message, duplicateIds)
+                    } else {
+                        respounce.createMessage(req, res, message, instanceIds)
+                    }
+                }
+
+            }
+        });
+    } catch (error) {
+        return res.status(400).json({ message: "something went wrong ", result: error.message });
+    }
+}
+
+async function natGateWayList(req, res, message) {
+    try {
+        const tfConfig = `
+        data "aws_nat_gateways" "all" {
+            
+          }
+          
+          output "nat_gateways" {
+            value = data.aws_nat_gateways.all.ids
+          }
+          `;
 
         // Write the Terraform configuration to a file
         fs.writeFileSync(`${path.directory}/instance_list.tf`, tfConfig);
@@ -313,22 +374,17 @@ async function internetGateWayList(req, res, message) {
                 console.error('Terraform apply failed:', applyStderr);
                 res.send("Terraform apply failed");
             } else {
-                console.log('Terraform apply succeeded.');
-                console.log(applyStdout);
-                const subnetIdRegex = /"subnet-\w+"/g;
-                const matchArray = applyStdout.match(subnetIdRegex);
-                const instanceIds = matchArray.map(match => match.replace(/"/g, ''));
-                function findDuplicates(array) {
-                    let duplicateIds = [...new Set(array)]
+                const nat_gatewayIdRegex = /"nat-\w+"/g; // Update the regex to match NAT gateway IDs
+                const matchArray = applyStdout.match(nat_gatewayIdRegex);
 
-                    return duplicateIds;
+                if (!matchArray) {
+                    console.error('No NAT gateway IDs found.');
+                    // Handle this case according to your requirements, such as sending an appropriate response
+                } else {
+                    const gatewayIds = matchArray.map(match => match.replace(/"/g, ''));
+                    respounce.createMessage(req, res, message, gatewayIds);
                 }
-                let duplicateIds = findDuplicates(instanceIds);
-                if(duplicateIds.length > 0){
-                    respounce.createMessage(req, res, message, duplicateIds)
-                }else{
-                    respounce.createMessage(req, res, message, instanceIds)
-                }
+
             }
         });
     } catch (error) {
@@ -338,6 +394,6 @@ async function internetGateWayList(req, res, message) {
 
 
 module.exports = {
-    vpcListGet, securityGroupListGet, internetGateWayList,
+    vpcListGet, securityGroupListGet, internetGateWayList, natGateWayList,
     subnetGetList, osListGet, instanceGetList, architectureSecurityGroup
 };

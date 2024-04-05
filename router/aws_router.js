@@ -73,6 +73,8 @@ router.post("/s3_bucket", middleware.authorization, middleware.authentication(['
 router.get("/vpclist",getServiceController.vpc_list);
 router.get("/SG_list",getServiceController.security_group_list)
 router.get("/subnet_list",getServiceController.subnet_list)
+router.get("/interGateWay_list",getServiceController.internet_gate_way_list)
+router.get("/natGateWay_list",getServiceController.nat_gate_way_list)
 router.get("/os_list",getServiceController.os_list)
 router.post("/queue_creation", middleware.authorization, middleware.authentication(['superAdmin','admin'],true), serviceController.create_queue)
 router.post("/sns_topic", middleware.authorization, middleware.authentication(['superAdmin','admin'],true), serviceController.create_sns_topic)
@@ -86,7 +88,8 @@ router.post("/docker_instance", middleware.authorization, middleware.authenticat
 router.post("/cloud_app_runner", middleware.authorization, middleware.authentication(['superAdmin','admin','user'],true),deploymentController.appRunner) //App runner
 router.post("/jenkins_pipeline", middleware.authorization, middleware.authentication(['superAdmin','admin','user'],true),deploymentController.jenkinsPipeline) //Jenkins
 router.post("/ebs", middleware.authorization, middleware.authentication(['superAdmin','admin','user'],true),deploymentController.ebs) //EBS
-router.post("/code_pipeline", middleware.authorization, middleware.authentication(['superAdmin','admin','user'],true),deploymentController.code_pipeline)
+router.post("/jenkins_instance", middleware.authorization, middleware.authentication(['superAdmin','admin','user'],true),deploymentController.jenkinsInstance)
+router.post("/jenkins_pipeline", middleware.authorization, middleware.authentication(['superAdmin','admin','user'],true),deploymentController.jenkinsPipeline)
 
 //process
 router.post("/architecture",architectureController.architecture)

@@ -3,15 +3,24 @@ const { exec } = require('child_process');
 const path = require('../path');
 const respounce = require('../response/response')
 
-async function jenkinsInstance(req, res, message){
+async function jenkinsInstance(req, res, message) {
     try {
+
+        let repo = req.body.repoName
+        let instance_name = req.body.instanceTagName
+        let ami = req.body.ami //ami-0287a05f0ef0e9d9a
+        let instance_type = req.body.instanceType //t2.micro
+        let subnet_id = req.body.subnetId  //subnet-027f6c6c1f4cd07c3
+        let security_group_id = req.body.securityGroupId //["sg-0c1894e242d5ce805"]
+
         const tfConfig = `
-        resource "aws_instance" "jenkins_server" {
-            ami                         = "ami-03f4878755434977f"
-            instance_type               = "t2.medium"
-            key_name                    = "Jenkins"
+        resource "aws_instance" "${instance_name}" {
+            ami                         = "${ami}"
+            instance_type               = "${instance_type}"              
+            key_name                    = "campus_datayaan"        
             associate_public_ip_address = true
-            vpc_security_group_ids      = ["sg-0c1894e242d5ce805"]
+            subnet_id                   = "${subnet_id}" 
+            vpc_security_group_ids      = ["${security_group_id}"]
            
             user_data = <<-EOF
                       #!/bin/bash
@@ -29,12 +38,12 @@ async function jenkinsInstance(req, res, message){
                   EOF
            
             tags = {
-              Name = "jenkins-server"
+              Name = "${instance_name}"
             }
           }
            
           output "jenkins_initial_admin_password" {
-            value = aws_instance.jenkins_server.user_data
+            value = aws_instance.${instance_name}.user_data
           }
            
         `
@@ -48,7 +57,6 @@ async function jenkinsInstance(req, res, message){
                 console.error('Terraform login initialization failed:', initStderr);
                 res.status(400).send("Terraform login initialization failed");
             } else {
-                // console.log(3);
                 console.log('Terraform login initialization succeeded.');
                 exec('terraform apply -auto-approve', (applyError, applyStdout, applyStderr) => {
                     if (applyError) {
@@ -80,7 +88,7 @@ async function jenkinsData(req, res, message) {
           }
           
           provider "jenkins" {
-            server_url = "http://3.109.181.119:8080/"  # Specify the correct Jenkins server URL
+            server_url = "http://65.1.130.74:8080/"  # Specify the correct Jenkins server URL
             username   = "root"
             password   = "root"
           }
@@ -96,14 +104,13 @@ async function jenkinsData(req, res, message) {
 
         let findValue = {}
         findValue.AWS_DEFAULT_REGION = 'ap-south-1'
-        findValue.AWS_ACCOUNT_ID = '482088842115'
+        findValue.AWS_ACCOUNT_ID = '65.1.130.74'
         findValue.CODECOMMIT_REPO_URL = 'https://git-codecommit.ap-south-1.amazonaws.com/v1/repos/datayaan_website2.0'
         findValue.ECR_REPO_NAME = 'sample-repo'
         findValue.DOCKER_IMAGE_NAME = 'sample-repo'
         findValue.DOCKER_HOST_IP = '13.233.110.194'
         findValue.DOCKER_HOST_PORT = '80'
-        findValue.YOUR_CONTAINER = '482088842115.dkr.ecr.ap-south-1.amazonaws.com/sample-repo'
-        // AWS_CREDENTIALS= credentials('aws_provider'),// Use the ID you set in Jenkins credentials
+        findValue.YOUR_CONTAINER = '411571901235.dkr.ecr.ap-south-1.amazonaws.com/sample-repo'
         findValue.IMAGE_TAG = "sample-repo"
 
 
@@ -135,5 +142,5 @@ async function jenkinsData(req, res, message) {
 }
 
 module.exports = {
-    jenkinsData
+    jenkinsData, jenkinsInstance
 }

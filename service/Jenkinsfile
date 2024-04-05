@@ -14,8 +14,8 @@ pipeline {
             DOCKER_HOST_PORT = data.findValue.DOCKER_HOST_PORT
             YOUR_CONTAINER = data.findValue.YOUR_CONTAINER
             // AWS_CREDENTIALS = credentials('aws_accesskey')
-            AWS_ACCESS_KEY_ID = 'AKIAXAPV36OBZ4Q4EV6K'
-            AWS_SECRET_ACCESS_KEY = 'JGxXIQKIU334UHpF6ANF75PhoIpQ/Mjn4XqpCMxY'
+            AWS_ACCESS_KEY_ID = data.findValue.ACCESSKEY
+            AWS_SECRET_ACCESS_KEY = data.findValue.SECRETKEY
             IMAGE_TAG = data.findValue.IMAGE_TAG
         }
         // AWS_DEFAULT_REGION = 'ap-south-1'

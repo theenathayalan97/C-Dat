@@ -37,6 +37,16 @@ async function createDockerInstance(req, res) {
     }
   }
   
+  async function jenkinsInstance(req, res){
+    try {
+      let Jenkins = message.Jenkins
+      let jenkins = await jenkinsService.jenkinsInstance(req, res, Jenkins)
+    } catch (error) {
+      console.log("error is: ", error);
+      return res.status(400).json({ message: "something went wrong ", result: error.message });
+    }
+  }
+
   async function jenkinsPipeline(req, res){
     try {
       let jenkins_pipeline = message.jenkinsPipeline
@@ -63,4 +73,4 @@ async function createDockerInstance(req, res) {
   }
 
   module.exports = { createDockerInstance, createContainerDeploy, rosa, jenkinsPipeline, 
-    appRunner, ebs, code_pipeline }
+    appRunner, ebs, code_pipeline, jenkinsInstance, jenkinsPipeline }

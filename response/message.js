@@ -9,7 +9,9 @@ let ec2Instance = "EC2 instance created";
 let getVpc = "get vpc";
 let getSubnet = "get subnet";
 let getOs = "get os";
-let getSecurityGroup = "get security group";
+let getSecurityGroup = "get security group ";
+let getNatGateWay = "get nat gateway "
+let getInternetGateWay = "get internet gateway "
 let s3Bucket = "S3 bucket created";
 let accountDestroy = "Account destroyed";
 let serviceDestroy = "Service destroyed";
@@ -26,11 +28,12 @@ let containerDeploy = "Container Deployed"
 let appRunner = "Cloud app runner created"
 let ebs = "EBS Created "
 let code_pipeline = "Code pipeline created"
-let jenkinsPipeline = "Jenkins created "
+let Jenkins = "Jenkins created "
+let jenkinsPipeline = "jenkins pipeline created "
 let keyPair = "Key pair created "
 
 module.exports ={ login, vpc, subnet, route_table, internet_gateway, 
     nat_gateway, security_group, ec2Instance, getVpc, getSubnet, getOs, getSecurityGroup, s3Bucket
   , accountDestroy, serviceDestroy, create_queue, snsCreate, codePush, codePull, rosaCreate, 
   createLoadBalancer, architecture, mailSend, dockerInstance, containerDeploy, appRunner, ebs,
-  code_pipeline, jenkinsPipeline, keyPair }
+  code_pipeline, jenkinsPipeline, keyPair, Jenkins, getNatGateWay, getInternetGateWay }
