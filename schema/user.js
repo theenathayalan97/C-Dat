@@ -25,12 +25,12 @@ module.exports = (database, Sequelize) => {
         role: {
             type: Sequelize.STRING,
             allowNull: true,
-            defaultValue: 'user'
+            defaultValue:'user'
         },
         status: {
             type: Sequelize.STRING,
             allowNull: true,
-            defaultValue: 'active'
+            defaultValue:'active'
         },
         is_deleted:{
             type:Sequelize.BOOLEAN,

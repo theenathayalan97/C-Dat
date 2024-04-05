@@ -28,10 +28,13 @@ async function createSnsTopic(req, res, message) {
     fs.writeFileSync(`${path.directory}/sns_topic.tf`, tfConfig);
     const configPath = `${path.directory}`;
     process.chdir(configPath);
-
+    
     // Run Terraform commands
     exec('terraform apply -auto-approve', (applyError, applyStdout, applyStderr) => {
       if (applyError) {
+        if(applyError.includes("terraform init")){
+          return res.status(400).json({ message: "start initial terraform init" });
+        }
         console.log('SNS topic creation failed:', applyStderr);
         return res.status(400).json({ message: "SNS topic creation failed" });
       } else {
@@ -68,7 +71,7 @@ async function queueCreate(req, res, message) {
         console.error('Terraform apply failed:', applyStderr);
         res.status(400).send("Terraform apply failed");
       } else {
-        console.log('Terraform apply succeeded.');
+        console.log('Queue created successfully');
         respounce.createMessage(req, res, message)
       }
     });

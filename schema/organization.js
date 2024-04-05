@@ -6,7 +6,7 @@ module.exports = (database, Sequelize) => {
             primarykey: true,
             defaultValue: Sequelize.UUIDV4()
         },
-        name: {
+        organization_name: {
             type: Sequelize.STRING,
             allowNull: false
         },

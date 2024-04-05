@@ -49,7 +49,7 @@ const router=require("express").Router();
 
 // finish router
 //super admin
-router.post("/superAdmin_signup", middleware.authorization, middleware.authentication(['superAdmin'],true), userController.superAdminSignUp);
+router.post("/superAdmin_signup", userController.superAdminSignUp);
 
 // organization
 router.post("/organization_signup", middleware.authorization, middleware.authentication(['superAdmin'],true), userController.organizationSignUp);

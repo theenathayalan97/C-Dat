@@ -28,41 +28,44 @@ async function userSignUp(req, res) {
     let email = req.body.email
     let phonenumber = req.body.phonenumber
     let organization_name = req.body.organization_name
-
+ 
     register.name = name
     register.password = password
     register.email = email
     register.phonenumber = phonenumber
-    if(organization_name){
+    if (organization_name) {
       let organization_data = await organization.findOne({
-        where: { name: organization_name }
+        where: { organization_name: organization_name }
       })
+      if (!organization_data ){
+        return res.status(400).json({ message: "organization not found" })
+      }else{
       register.organization_id = organization_data.uuid
       register.status = "pending"
-      console.log("user register : ", register);
-    let data = await user.findOne({
-      where: { email: email, organization_id:register.organization_id }
-    })
-    if (data) {
-      return res.status(400).json({ message: "already email id registered" })
+      let data = await user.findOne({
+        where: { email: email, organization_id: register.organization_id }
+      })
+      if (data) {
+        return res.status(400).json({ message: "already email id registered" })
+      } else {
+        let sendMail = await mailMessage.mailSend(organization_data.email, `Please approve your organization by ${name}`, organization_data.organization_name)
+        let userRegister = await user.create(register)
+        return res.status(201).json({ message: "Request message send for admin" })
+      }
+      }
     } else {
-      let sendMail = await mailMessage.mailSend(email,`Please approve your organization by ${name}`)
-      let userRegister = await user.create(register)
-      return res.status(201).json({ message: "Request message send for admin" })
+      
+      let data = await user.findOne({
+        where: { email: email }
+      })
+      if (data) {
+        return res.status(400).json({ message: "already email id registered" })
+      } else {
+        let userRegister = await user.create(register)
+        return res.status(201).json({ message: "user register successfully" })
+      }
     }
-    } else{
-      // console.log("user register : ", register);
-    let data = await user.findOne({
-      where: { email: email, organization_id:register.organization_id }
-    })
-    if (data) {
-      return res.status(400).json({ message: "already email id registered" })
-    } else {
-      let userRegister = await user.create(register)
-      return res.status(201).json({ message: "user register successfully" })
-    }
-    }
-    
+
 
   } catch (error) {
     return res.status(400).json({ message: " something went wrong ", result: error.message })
@@ -83,6 +86,7 @@ async function superAdminSignUp(req, res, message) {
     register.email = email
     register.phonenumber = phonenumber
     register.role = role
+
     let data = await user.findOne({
       where: { email: email }
     })
@@ -102,22 +106,28 @@ async function organizationSignUp(req, res, message) {
   try {
     // console.log(1);
     let register = {}
-    let name = req.body.name
+    let organization_name = req.body.organization_name
     let password = req.body.password
     let email = req.body.email
     let phonenumber = req.body.phonenumber
 
-    register.name = name
+    register.organization_name = organization_name
     register.password = password
     register.email = email
     register.phonenumber = phonenumber
     register.createdby = req.id
 
-    let data = await user.findOne({
+    let data = await organization.findOne({
       where: { email: email }
     })
     if (data) {
-      return res.status(400).json({ message: "already email id registered" })
+      if (data.organization_name == register.organization_name) {
+        return res.status(400).json({ message: "already name registered" })
+      } else if (data.phonenumber == register.phonenumber) {
+        return res.status(400).json({ message: "already phonenumber registered" })
+      } else {
+        return res.status(400).json({ message: "already email_id registered" })
+      }
     } else {
       let organizationRegister = await organization.create(register)
       return res.status(201).json({ message: "organization register successfully" })
@@ -130,30 +140,26 @@ async function organizationSignUp(req, res, message) {
 
 async function organizationLogin(req, res, message) {
   try {
-    let phonenumber = req.body.phonenumber
-    if (!phonenumber) {
-      return res.status(400).json({ message: "phone number required" })
+    let email = req.body.email
+    if (!email) {
+      return res.status(400).json({ message: "email required" })
     }
     let password = req.body.password
     if (!password) {
       return res.status(400).json({ message: "password required" })
     }
     // console.log(1);
-    let organizationData = await user.findOne({
+    let organizationData = await organization.findOne({
       where: { email: email }
     })
     if (!organizationData) {
       return res.status(404).json({ message: "organization not found" })
-    }
-    if (organizationData.phonenumber == phonenumber) {
-      if (organizationData.password == password) {
-        return res.status(201).json({ message: "log in successfully" })
-      } else {
-        return res.status(400).json({ message: "user phone number and password incorrect" })
-      }
+    } else if (organizationData.password == password) {
+      return res.status(201).json({ message: "log in successfully" })
     } else {
-      return res.status(400).json({ message: "user phone number and password incorrect" })
+      return res.status(400).json({ message: "user email id and password incorrect" })
     }
+
 
   } catch (error) {
     return res.status(400).json({ message: " something went wrong ", result: error.message })
@@ -169,20 +175,45 @@ async function adminSignUp(req, res, message) {
     let email = req.body.email
     let phonenumber = req.body.phonenumber
     let role = req.body.role
+    let organization_name = req.body.organization_name
+    if(!organization_name){
+      return res.status(400).json({ message: "organisation name required" })
+    }
 
     register.name = name
     register.password = password
     register.email = email
     register.phonenumber = phonenumber
-    register.organization_id = req.organization_id
+    if ((req.role == 'admin') && (role == 'superAdmin')) {
+      return res.status(400).json({ message: "access denied" })
+    }
     register.role = role
 
-    // console.log("user register : ", register);
+
+
+    if (req.organization_id) {
+      register.organization_name = req.organization_id
+    } else {
+      let organizationData = await organization.findOne({
+        where: { organization_name: organization_name }
+      })
+
+      if(organizationData){
+        register.organization_id = organizationData.uuid
+      }else{
+        return res.status(400).json({ message: "organisation not found" })
+      }     
+    }
+
     let data = await user.findOne({
-      where: { phonenumber: phonenumber }
+      where: { phonenumber: phonenumber, organization_id : register.organization_id }
     })
     if (data) {
-      return res.status(400).json({ message: "already phone number registered" })
+      if (data.email == register.email) {
+        return res.status(400).json({ message: "already email registered" })
+      }else {
+        return res.status(400).json({ message: "already phonenumber registered" })
+      }
     } else {
       let userRegister = await user.create(register)
       return res.status(200).json({ message: "user register successfully" })
@@ -206,28 +237,24 @@ async function userLogin(req, res, message) {
     }
     // console.log(1);
     let data = await user.findOne({
-      where: { phonenumber: phonenumber, status : 'active', isActive : true }
+      where: { phonenumber: phonenumber, status: 'active', is_active: true }
     })
     if (!data) {
       return res.status(404).json({ message: "user not found" })
-    }
-    if (data.phonenumber == phonenumber) {
-      if (data.password == password) {
-        let user = {
-          uuid: data.uuid,
-          role: data.role,
-          organization_id: data.organization_id
-        }
-        const token = jwt.sign(user, jwtSecretKey, {
-          expiresIn: '365d' // expires in 365 days
-     });
-        return res.status(201).json({ message: "log in successfully", result: token })
-      } else {
-        return res.status(400).json({ message: "user phone number and password incorrect" })
+    } else if ((data.password == password) && (data.phonenumber == phonenumber)) {
+      let user = {
+        uuid: data.uuid,
+        role: data.role,
+        organization_id: data.organization_id
       }
+      const token = jwt.sign(user, jwtSecretKey, {
+        expiresIn: '365d' // expires in 365 days
+      });
+      return res.status(201).json({ message: "log in successfully", result: token })
     } else {
       return res.status(400).json({ message: "user phone number and password incorrect" })
     }
+
 
   } catch (error) {
     return res.status(400).json({ message: " something went wrong ", result: error.message })
@@ -239,7 +266,7 @@ async function getService(req, res) {
     let userId = req.id
 
     let serviceDetails = await service.findAll({
-      where : {user_id : userId}
+      where: { user_id: userId }
     })
     if (serviceDetails) {
       return res.status(200).json({ message: "get service detail successfully" })
@@ -273,6 +300,9 @@ async function s3_bucket_creation(req, res, message) {
 
     exec('terraform apply -auto-approve', (applyError, applyStdout, applyStderr) => {
       if (applyError) {
+        if(applyStderr.includes('start with a letter or underscore')){
+          return res.status(400).json({ message : "the letter not start with a number or underscore"})
+        }
         console.error('Terraform S3 Bucket creation failed:', applyStderr);
         return res.status(400).json({ message: "Terraform S3 Bucket creation failed" });
       } else {
@@ -288,20 +318,20 @@ async function s3_bucket_creation(req, res, message) {
 
 async function forgetPasswordOtpSend(req, res) {
   try {
-    let forgetPassword ={
-      email : req.params.email,
-      uuid : req.id
-    } 
- 
+    let forgetPassword = {
+      email: req.params.email,
+      uuid: req.id
+    }
+
     let data = await user.findOne({
       where: forgetPassword
     })
-    if(!data){
-      return res.status(404).json({ message: "email not found"})
+    if (!data) {
+      return res.status(404).json({ message: "email not found" })
     }
 
-    otp = otpGenerator.generate(4, { 
-      lowerCaseAlphabets: false, upperCaseAlphabets: false, specialChars: false 
+    otp = otpGenerator.generate(4, {
+      lowerCaseAlphabets: false, upperCaseAlphabets: false, specialChars: false
     });
 
     setTimeout(() => {
@@ -313,37 +343,37 @@ async function forgetPasswordOtpSend(req, res) {
       port: 465,               // true for 465, false for other ports
       host: "smtp.gmail.com",
       auth: {
-          user: process.env.step-email,
-          pass: process.env.step-pass,
+        user: process.env.step - email,
+        pass: process.env.step - pass,
       },
       secure: true,
-  });
+    });
 
-  const mailData = {
-      from: process.env.step-email ,  // sender address
+    const mailData = {
+      from: process.env.step - email,  // sender address
       to: data.email,   // list of receivers
       subject: 'change the password',
       text: 'That was easy!',
       html: `<b>forget password </b><br> OTP - ${otp}<br/>`,
-  };
+    };
 
-  transporter.sendMail(mailData, function (err, info) {
+    transporter.sendMail(mailData, function (err, info) {
       if (err)
-          console.log(err)
+        console.log(err)
       else
-      return res.status(200).json({ message: "OTP mail send successfully", message_id: info})
-  });
+        return res.status(200).json({ message: "OTP mail send successfully", message_id: info })
+    });
   } catch (error) {
     return res.status(400).json({ message: "something went wrong", result: error.message })
   }
 }
 
-async function passwordOtpVerify(req, res){
+async function passwordOtpVerify(req, res) {
   try {
-    let userOtp = req.body.otp 
+    let userOtp = req.body.otp
     if (userOtp == otp) {
       return res.status(200).json({ message: 'OTP verifyed successfully' })
-    }else{
+    } else {
       return res.status(400).json({ message: 'Please check the OTP' })
     }
   } catch (error) {
@@ -355,7 +385,7 @@ async function changePassword(req, res) {
   try {
     let newPassword = req.body.newPassword
     let changePassword = req.body.changePassword
-    if(newPassword == changePassword){
+    if (newPassword == changePassword) {
       let data = await user.findOne({
         where: { uuid: req.id }
       })
@@ -364,37 +394,37 @@ async function changePassword(req, res) {
         where: { uuid: req.id }
       })
       return res.status(200).json({ message: 'Password change successfully' })
-    }else{
-      return res.status(400).json({ message: 'Please check the new password and change password'})
+    } else {
+      return res.status(400).json({ message: 'Please check the new password and change password' })
     }
-     
+
   } catch (error) {
     return res.status(400).json({ message: 'something went wrong', result: error.message })
   }
 }
 
 //get 
-async function getUser(req,res){
+async function getUser(req, res) {
   try {
     let user_id = req.id
     let userData = await user.findOne({
-      where : { uuid : user_id}
+      where: { uuid: user_id }
     })
 
-    return res.status(200).json({ message: "user data get successfully ", result: userData})
+    return res.status(200).json({ message: "user data get successfully ", result: userData })
   } catch (error) {
     return res.status(400).json({ message: 'something went wrong', result: error.message })
   }
 }
 
-async function getOrganization(req,res){
+async function getOrganization(req, res) {
   try {
     let name = req.body.name
     let organizationData = await organization.findOne({
-      where : { name : name}
+      where: { name: name }
     })
 
-    return res.status(200).json({ message: "user data get successfully ", result: organizationData})
+    return res.status(200).json({ message: "user data get successfully ", result: organizationData })
   } catch (error) {
     return res.status(400).json({ message: 'something went wrong', result: error.message })
   }
@@ -402,7 +432,7 @@ async function getOrganization(req,res){
 
 module.exports = {
   adminSignUp, superAdminSignUp, organizationSignUp, userSignUp, organizationLogin,
-  userLogin, s3_bucket_creation, getService, forgetPasswordOtpSend, changePassword, 
+  userLogin, s3_bucket_creation, getService, forgetPasswordOtpSend, changePassword,
   passwordOtpVerify, getOrganization, getUser
 };
 

@@ -100,21 +100,22 @@ async function architecture(req, res, message) {
   }
 }
 
-async function loadbancer(req, res) {
+async function loadbancer(req, res, message) {
   try {
-    let targetGroupTagName = req.body.loadbancer.targetGroupTagName
-    let loadbancerTagName = req.body.loadbancer.loadbancerTagName
-    let vpcId = req.body.loadbancer.vpcId
-    let instanceId = req.body.loadbancer.instanceId
-    let subnetId = req.body.loadbancer.subnetId
+    let targetGroupTagName = req.body.targetGroupTagName
+    let loadbancerTagName = req.body.loadbancerTagName
+    let vpcId = req.body.vpcId
+    let instanceId = req.body.instanceId
+    let subnetId = req.body.subnetId
 
+    console.log("subnetId.length : ",subnetId.length)
     if (!targetGroupTagName) {
-      return res.status(400).json({ message: "only one loadbancer target group name is specified" })
-    }
-    if (!vpcId) {
+      return res.status(400).json({ message: "target group name is required" })
+    }else if (!vpcId) {
       return res.status(400).json({ message: "Vpc id is required" })
-    }
-    if ((subnetId.length == 0) && (subnetId.length > 2)) {
+    }else if (!instanceId) {
+      return res.status(400).json({ message: "Instance id is required" })
+    }else if ((subnetId.length <= 0) || (subnetId.length < 2)) {
       return res.status(400).json({ message: "only two subnet id is specified" });
     }
 
@@ -125,10 +126,9 @@ async function loadbancer(req, res) {
           protocol = "HTTP"
           vpc_id   = "${vpcId}"
         }
-         
         // attach instance in load balance
         resource "aws_lb_target_group_attachment" "test" {
-          target_group_arn = "aws_lb_target_group.${targetGroupTagName}.arn"
+          target_group_arn = "arn:aws:elasticloadbalancing:ap-south-1:411571901235:targetgroup/demoTarget1/86f5e2f1503695d8"
           target_id        = "${instanceId}"
           port             = 80
         }
@@ -147,7 +147,24 @@ async function loadbancer(req, res) {
           }
         }
         `
-    return loadbancer;
+        fs.writeFileSync(`${path.directory}/load_balancer.tf`,loadbancer);
+        const configPath = `${path.directory}`;
+        process.chdir(configPath);
+    
+        exec("terraform apply -auto-approve ", (applyError, applyStdout, applyStderr) => {
+          if (applyError) {
+            if(applyStderr.includes("only alphanumeric characters and hyphens allowed")){
+              return res.status(400).send("Only alphanumeric characters and hyphens letters allowed");
+            }else if(applyStderr.includes( "same Availability Zone")){
+              return res.status(400).send("Subnet available zone is same so change the subnet available zone");
+            }
+            console.error("load balancer created failed:", applyStderr);
+            return res.status(400).send("load balancer created failed");
+          } else {
+            console.log(" load balancer created successfully ");
+            respounce.createMessage(req, res, message)
+          }
+        });
   } catch (error) {
     return res.status(500).json({ message: "something went wrong", result: error.message })
   }

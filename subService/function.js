@@ -1,6 +1,6 @@
 const nodemailer = require('nodemailer');
 
-async function mailSend(mailId,message){
+async function mailSend(mailId, message, organizaion){
     const transporter = nodemailer.createTransport({
         port: 465,               // true for 465, false for other ports
         host: "smtp.gmail.com",
@@ -25,6 +25,10 @@ async function mailSend(mailId,message){
         else
         return true
     });
+}
+
+async function RestartTerraform(req,res){
+    
 }
 
 module.exports = { mailSend }
