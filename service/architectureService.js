@@ -108,7 +108,7 @@ async function loadbancer(req, res, message) {
     let instanceId = req.body.instanceId
     let subnetId = req.body.subnetId
 
-    console.log("subnetId.length : ",subnetId.length)
+
     if (!targetGroupTagName) {
       return res.status(400).json({ message: "target group name is required" })
     }else if (!vpcId) {
@@ -157,10 +157,13 @@ async function loadbancer(req, res, message) {
               return res.status(400).send("Only alphanumeric characters and hyphens letters allowed");
             }else if(applyStderr.includes( "same Availability Zone")){
               return res.status(400).send("Subnet available zone is same so change the subnet available zone");
+            }else if(applyStderr.includes("already exists")){
+              return res.status(400).json({ message: "name is already exit" });
             }
             console.error("load balancer created failed:", applyStderr);
             return res.status(400).send("load balancer created failed");
           } else {
+            console.log("message : ", message)
             console.log(" load balancer created successfully ");
             respounce.createMessage(req, res, message)
           }
@@ -196,6 +199,9 @@ async function keyPair(req, res, message) {
 
     exec("terraform apply -auto-approve ", (applyError, applyStdout, applyStderr) => {
       if (applyError) {
+        if(applyStderr.includes("already exists")){
+          return res.status(400).json({ message: "name is already exit" });
+        }
         console.error("key pair created failed:", applyStderr);
         return res.status(400).send("key pair created failed");
       } else {

@@ -60,6 +60,39 @@ async function userSignUp(req, res ) {
       return res.status(400).json({ message: " something went wrong ", result: error.message })
     }
   }
+
+  async function forgetPassword(req, res ) {
+    try {
+      let login_message = message.login
+      await userService.forgetPassword(req, res, login_message)
+    }
+    catch (error) {
+      console.log("error is: ", error);
+      return res.status(400).json({ message: " something went wrong ", result: error.message })
+    }
+  }
+
+  async function passwordOtpVerify(req, res ) {
+    try {
+      let login_message = message.login
+      await userService.passwordOtpVerify(req, res, login_message)
+    }
+    catch (error) {
+      console.log("error is: ", error);
+      return res.status(400).json({ message: " something went wrong ", result: error.message })
+    }
+  }
+  
+  async function changePassword(req, res ) {
+    try {
+      let login_message = message.login
+      await userService.changePassword(req, res, login_message)
+    }
+    catch (error) {
+      console.log("error is: ", error);
+      return res.status(400).json({ message: " something went wrong ", result: error.message })
+    }
+  }
   
   //get 
   async function userGet(req, res){
@@ -75,5 +108,6 @@ async function userSignUp(req, res ) {
   }
 
     module.exports = { adminSignUp, superAdminSignUp, organizationSignUp, organizationLogin, 
-    userSignUp, login   , userGet, organizationGet, serviceGet}
+    userSignUp, login   , userGet, organizationGet, serviceGet, forgetPassword, changePassword,
+    passwordOtpVerify }
   

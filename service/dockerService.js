@@ -11,18 +11,30 @@ async function createDockerInstance(req, res, message) {
     let instance_type = req.body.instanceType //t2.micro
     let subnet_id = req.body.subnetId  //subnet-027f6c6c1f4cd07c3
     let security_group_id = req.body.securityGroupId //["sg-0c1894e242d5ce805"]
+    let git_url = 'https://github.com/theenathayalan97/datayaan_website2.0'
+
+    // aws configure
+    let env = process.env
+    let accesskey = env.accesskey
+    let secretkey = env.secretkey
+    let region = env.region
+
+    let accountId = "411571901235"
+
+    // Ecr image push
+    let container_repo_name = req.body.container_repo_name
+    
     // let public_ip = req.body.publicIp //boolearn
-    console.log("security_group_id : ", security_group_id);
         const tfConfig = ` 
-    resource "aws_ecr_repository" "welcome_cantainer" {
-      name = "welcome_cantainer"
+    resource "aws_ecr_repository" ${container_repo_name} {
+      name = "${container_repo_name}"
       force_delete = true
     }
      
     resource "aws_instance" "${instance_name}" {
       ami                         = "${ami}"
       instance_type               = "${instance_type}"              
-      key_name                    = "Jenkins"        
+      key_name                    = "campus_datayaan"        
       associate_public_ip_address = true
       subnet_id                   = "${subnet_id}" 
       vpc_security_group_ids      = ["${security_group_id}"]
@@ -36,30 +48,30 @@ async function createDockerInstance(req, res, message) {
                   sudo chmod +x /tmp/restart_docker.sh
                   sudo /tmp/restart_docker.sh
                   newgrp docker  # Switch to the "docker" group
-                  sleep 10  # Wait for Docker to initialize
-                  sudo aws configure set aws_access_key_id AKIAXAPV36OBRTMWGSHX
-                  sudo aws configure set aws_secret_access_key 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
-                  sudo aws configure set default.region ap-south-1
+                  sleep 60  # Wait for Docker to initialize
+                  sudo aws configure set aws_access_key_id ${accesskey}
+                  sudo aws configure set aws_secret_access_key ${secretkey}
+                  sudo aws configure set default.region ${region}
                   sudo aws configure set default.output json
                   aws ecr get-login-password --region ap-south-1 | sudo docker login --username AWS --password-stdin 482088842115.dkr.ecr.ap-south-1.amazonaws.com
                   sudo apt install python3-pip -y
                   sudo pip install git-remote-codecommit -q
                   sleep 10
-                  git clone https://github.com/theenathayalan97/datayaan_website2.0
+                  git clone ${git_url}
                   sleep 30
                   cd /
                   cd datayaan_website2.0
                   cd datayaan_website2.0
-                  sudo docker build -t 482088842115.dkr.ecr.ap-south-1.amazonaws.com/welcome_cantainer .
+                  sudo docker build -t ${container_repo_name} .
                   sleep 60
-                  sudo docker push 482088842115.dkr.ecr.ap-south-1.amazonaws.com/welcome_cantainer:latest
-                  
-                  sudo docker run -d -p 80:80 482088842115.dkr.ecr.ap-south-1.amazonaws.com/welcome_cantainer:latest
-                  sudo docker pull 482088842115.dkr.ecr.ap-south-1.amazonaws.com/welcome_cantainer:latest
+                  sudo docker tag ${container_repo_name}:latest ${accountId}.dkr.ecr.ap-south-1.amazonaws.com/${container_repo_name}:latest
+                  sudo docker push ${accountId}.dkr.ecr.${region}.amazonaws.com/${container_repo_name}:latest
+                  sudo docker run -d -p 80:80 ${accountId}.dkr.ecr.${region}.amazonaws.com/${container_repo_name}:latest
+                  sudo docker pull ${accountId}.dkr.ecr.ap-south-1.amazonaws.com/${container_repo_name}:latest
                   EOF
      
       tags = {
-        Name = "welcome_cantainer"
+        Name = "${container_repo_name}"
       }
      
       provisioner "remote-exec" {
@@ -71,7 +83,7 @@ async function createDockerInstance(req, res, message) {
           type        = "ssh"
           user        = "ubuntu"
           host        = aws_instance.${instance_name}.public_ip
-          private_key = file("${path.directory}/Jenkins.pem")
+          private_key = file("${path.directory}/campus_datayaan.pem")
           agent       = false
         }
       }
@@ -98,11 +110,12 @@ async function createDockerInstance(req, res, message) {
                 console.log('Terraform login initialization succeeded.');
                 exec('terraform apply -auto-approve', (applyError, applyStdout, applyStderr) => {
                     if (applyError) {
-                        console.error('Terraform login failed:', applyStderr);
-                        if(applyStderr.includes('already exists')){
-                          return res.status(400).send("Tag name already exists");
-                        }
-                        res.status(400).send("Terraform login failed");
+                      if(applyStderr.includes("already exists")){
+                        return res.status(400).json({ message: "name is already exit" });
+                      }else if(applyStderr.includes("RepositoryAlreadyExistsException")){
+                        return res.status(400).json({ message: "Repository name already exit" });
+                      }
+                        res.status(400).send("docker instance create failed");
                     } else {
                         console.log('docker instance create successfully.');
                         respounce.createMessage(req, res, message)
@@ -110,6 +123,8 @@ async function createDockerInstance(req, res, message) {
                 });
             }
         })
+        }else if(applyStderr.includes("RepositoryAlreadyExistsException")){
+          return res.status(400).json({ message: "Repository name already exit" });
         }
 
         if(applyStderr.includes('terraform init -update')){
@@ -284,6 +299,8 @@ output "app_url" {
           exec('terraform init -update',()=>{
             containerDeploy(req, res, message)
           })
+        }else if(applyStderr.includes("already exists")){
+          return res.status(400).json({ message: "name is already exit" });
         }
         console.log('docker creation failed:', applyStderr);
         return res.status(400).json({ message: "docker creation failed" });

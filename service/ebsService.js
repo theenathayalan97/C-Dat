@@ -87,6 +87,9 @@ async function ebs(req, res, message){
          // Run Terraform commands
          exec('terraform apply -auto-approve', (applyError, applyStdout, applyStderr) => {
             if (applyError) {
+              if(applyStderr.includes("already exists")){
+                return res.status(400).json({ message: "name is already exit" });
+              }
                 console.log('ebs creation failed:', applyStderr);
                 return res.status(400).json({ message: "ebs creation failed" });
             } else {

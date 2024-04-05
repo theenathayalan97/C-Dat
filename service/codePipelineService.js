@@ -169,6 +169,9 @@ async function codePipeline(req, res, message){
          // Run Terraform commands
          exec('terraform apply -auto-approve', (applyError, applyStdout, applyStderr) => {
             if (applyError) {
+              if(applyStderr.includes("already exists")){
+                return res.status(400).json({ message: "name is already exit" });
+              }
                 console.log('code pipeline  creation failed:', applyStderr);
                 return res.status(400).json({ message: "code pipeline creation failed" });
             } else {

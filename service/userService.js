@@ -316,7 +316,7 @@ async function s3_bucket_creation(req, res, message) {
   }
 }
 
-async function forgetPasswordOtpSend(req, res) {
+async function forgetPassword(req, res) {
   try {
     let forgetPassword = {
       email: req.params.email,
@@ -432,7 +432,7 @@ async function getOrganization(req, res) {
 
 module.exports = {
   adminSignUp, superAdminSignUp, organizationSignUp, userSignUp, organizationLogin,
-  userLogin, s3_bucket_creation, getService, forgetPasswordOtpSend, changePassword,
+  userLogin, s3_bucket_creation, getService, forgetPassword, changePassword,
   passwordOtpVerify, getOrganization, getUser
 };
 

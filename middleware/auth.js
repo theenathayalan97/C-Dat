@@ -37,8 +37,11 @@ async function authorization(req, res, next) {
         }
 
     } catch (error) {
+        if((error.message).includes("invalid signature")){
+            return res.status(400).json({ error: "Invalid token" });
+        }
         console.error("Error verifying token:", error.message);
-        res.status(400).json({ error: "something went wrong", result: error.message });
+        return res.status(400).json({ error: "something went wrong", result: error.message });
     }
 }
 

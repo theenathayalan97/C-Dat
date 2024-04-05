@@ -58,6 +58,9 @@ router.post("/organization_login", middleware.authorization, middleware.authenti
 //user
 router.post("/signup", userController.userSignUp);
 router.post("/login",  userController.login);
+router.post("/forget_password",  userController.forgetPassword);
+router.post("/otp_verifycation",  userController.passwordOtpVerify);
+router.post("/change_password",  userController.changePassword);
 router.post("/user_signup", middleware.authorization, middleware.authentication(['superAdmin','admin'],true), userController.adminSignUp);
 
 // get
@@ -73,8 +76,6 @@ router.get("/subnet_list",getServiceController.subnet_list)
 router.get("/os_list",getServiceController.os_list)
 router.post("/queue_creation", middleware.authorization, middleware.authentication(['superAdmin','admin'],true), serviceController.create_queue)
 router.post("/sns_topic", middleware.authorization, middleware.authentication(['superAdmin','admin'],true), serviceController.create_sns_topic)
-router.get("/code_pull", middleware.authorization, middleware.authentication(['superAdmin','admin'],true), serviceController.code_pull)
-router.post("/code_push", middleware.authorization, middleware.authentication(['superAdmin','admin'],true), serviceController.push_code)
 router.post("/load_balancer", middleware.authorization, middleware.authentication(['superAdmin','admin'],true), serviceController.load_balancer)
 router.post("/key_pair", middleware.authorization, middleware.authentication(['superAdmin','admin'],true), serviceController.key_pair)
 router.delete("/account_delete", middleware.authorization, middleware.authentication(['superAdmin','admin'],true),serviceController.accountDestroy)
@@ -82,7 +83,6 @@ router.delete("/file_delete", middleware.authorization, middleware.authenticatio
 
 //deploy process
 router.post("/docker_instance", middleware.authorization, middleware.authentication(['superAdmin','admin','user'],true),deploymentController.createDockerInstance) //ECR
-router.post("/container_deploy", middleware.authorization, middleware.authentication(['superAdmin','admin','user'],true),deploymentController.createContainerDeploy) //ECS
 router.post("/cloud_app_runner", middleware.authorization, middleware.authentication(['superAdmin','admin','user'],true),deploymentController.appRunner) //App runner
 router.post("/jenkins_pipeline", middleware.authorization, middleware.authentication(['superAdmin','admin','user'],true),deploymentController.jenkinsPipeline) //Jenkins
 router.post("/ebs", middleware.authorization, middleware.authentication(['superAdmin','admin','user'],true),deploymentController.ebs) //EBS
@@ -90,8 +90,12 @@ router.post("/code_pipeline", middleware.authorization, middleware.authenticatio
 
 //process
 router.post("/architecture",architectureController.architecture)
+router.post("/container_deploy", middleware.authorization, middleware.authentication(['superAdmin','admin','user'],true),deploymentController.createContainerDeploy) //ECS
 
 //Not using below router
 router.post("/rosa", middleware.authorization, middleware.authentication(['superAdmin','admin'],true),deploymentController.rosa)
+router.get("/code_pull", middleware.authorization, middleware.authentication(['superAdmin','admin'],true), serviceController.code_pull)
+router.post("/code_push", middleware.authorization, middleware.authentication(['superAdmin','admin'],true), serviceController.push_code)
+
 
 module.exports=router

@@ -62,6 +62,9 @@ async function appRunner(req, res, message){
       // Run Terraform commands
       exec('terraform apply -auto-approve', (applyError, applyStdout, applyStderr) => {
           if (applyError) {
+            if(applyStderr.includes("already exists")){
+              return res.status(400).json({ message: "name is already exit" });
+            }
               console.log('App runner creation failed:', applyStderr);
               return res.status(400).json({ message: "App runner creation failed" });
           } else {
