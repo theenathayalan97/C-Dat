@@ -3,12 +3,14 @@ let bodyParser = require('body-parser')
 const { exec } = require('child_process');
 const dotenv = require('dotenv').config()
 require('./Connections/Database')
+const cors = require('cors')
 var app=express();
 const port = 8000
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(bodyParser.urlencoded({ extended: false }))
+app.use(cors())
 
 // parse application/json
 app.use(bodyParser.json())
